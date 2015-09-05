@@ -3,33 +3,7 @@ import pygame.midi
 import sys
 import time
 from helpers import *
-
-def readMemory():
-    with open("memory.txt") as f:
-        lines = [line.strip() for line in f]
-    for num in lines[0].split(' '):
-        inst_mem.append(int(num))
-    for num in lines[1].split(' '):
-        base_mem.append(int(num))
-    for num in lines[2].split(' '):
-        vol_mem.append(int(num))
-    for num in lines[3].split(' '):
-        vel_mem.append(int(num))
-
-def writeMemory(num):
-    with open("memory.txt", 'w') as f:
-        for i in inst_mem:
-            f.write("%i " %i)
-        f.write("\n")
-        for b in base_mem:
-            f.write("%i " %b)
-        f.write("\n")
-        for v in vol_mem:
-            f.write("%i " %v)
-        f.write("\n")
-        for s in vel_mem:
-            f.write("%i " %s)
-        f.write("\n")
+from memory import *
 
 def drawMemory():
     # Transparent surface
@@ -184,7 +158,7 @@ inst_mem = list()
 base_mem = list()
 vol_mem = list()
 vel_mem = list()
-readMemory()
+readMemory(inst_mem, base_mem, vol_mem, vel_mem)
 print "Memory setup OK!"
 
 
@@ -328,14 +302,14 @@ while 1:
                         base_mem[mem-1] = baseNote
                         vol_mem[mem-1] = volume
                         vel_mem[mem-1] = velocity
-                        writeMemory(mem)
+                        writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
                     else:
                         # Load
                         inst_mem = []
                         base_mem = []
                         vol_mem = []
                         vel_mem = []
-                        readMemory()
+                        readMemory(inst_mem, base_mem, vol_mem, vel_mem)
                         inst_num = inst_mem[mem-1]
                         player.set_instrument(inst_num,channel)
                         baseNote = base_mem[mem-1]
