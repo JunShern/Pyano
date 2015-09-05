@@ -2,6 +2,7 @@ import pygame
 import pygame.midi
 import sys
 import time
+from helpers import *
 
 def readMemory():
     with open("memory.txt") as f:
