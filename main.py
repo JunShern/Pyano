@@ -3,14 +3,6 @@ import pygame.midi
 import sys
 import time
 
-def clamp(n, minn, maxn):
-        return max(min(maxn, n), minn)
-
-def colorClamp(r, g, b):
-    return pygame.Color(clamp(r,0,255),
-                        clamp(g,0,255),
-                        clamp(b,0,255))
-
 def readMemory():
     with open("memory.txt") as f:
         lines = [line.strip() for line in f]
