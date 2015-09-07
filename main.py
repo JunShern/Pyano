@@ -19,7 +19,6 @@ class Keyboard(object):
         self.sust = sust
         self.pressed = dict()
 
-
     def config(self):
         player.set_instrument(self.inst_num, self.channel) # Instrument
         player.write_short(176+self.channel,7,self.volume) # Volume
@@ -30,7 +29,6 @@ class Keyboard(object):
             self.pressed[keyname] -= 1
             if self.pressed[keyname] <= 0:
                 player.note_off(note, self.velocity, self.channel)
-                print note, "off!"
 
     def key_down(self, keyname):
         self.key_up(keyname) # If it's already ON, turn it OFF first
@@ -88,7 +86,16 @@ for fn in list_devices():
 devices = map(InputDevice, devices) 
 devices = {dev.fd: dev for dev in devices}
 num_devices = len(devices)
-print num_devices, " keyboards detected."
+print num_devices, "keyboards detected."
+if num_devices == 0:
+    print "Please ensure that you are root, and that you have keyboards connected."
+    print " "
+    pygame.display.quit()
+    player.abort()
+    player.close()
+    pygame.quit()
+    sys.exit()
+
 
 ## Setup keyboards
 keyboards = dict()
@@ -100,6 +107,9 @@ for d in devices:
 for kb in keyboards.values():
     kb.config()
     print "Keyboard", kb, " setup OK!"
+
+## Initialize caps
+caps_on = 1
 
 ## Key-code bindings
 getCode = dict()
@@ -152,12 +162,19 @@ while True:
                 keyname = ecodes.KEY[event.code]
                 note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
                 keydown = event.value
-                print keyname, note
+                #print keyname, note
 
                 # Modifiers
                 change = 1
                 if getCode["KEY_LEFTSHIFT"] in devices[fd].active_keys(): # Left shift
                     change = 10
+                if keyname == "KEY_CAPSLOCK":
+                    if keydown == True:
+                        caps_on = 1-caps_on
+                        if caps_on:
+                            print "Sharing is caring!"
+                        else:
+                            print "Individual mode."
 
                 ## Play note
                 if note >= kb.baseNote: # Check flag; ignore if not one of the notes
@@ -207,22 +224,44 @@ while True:
 
                 ## Sustain
                 elif keyname == "KEY_SPACE":
-                    if keydown == True:
-                        sust = 1
-                        player.write_short(176+kb.channel,64,127)
-                        for c in devices[fd].active_keys():
-                            _keyname = ecodes.KEY[c]
-                            if kb.pressed[_keyname]:
-                                kb.pressed[_keyname] += 1
-                    elif keydown == False:
-                        sust = 0
-                        player.write_short(176+kb.channel,64,0)
-                        for _keyname in kb.pressed.keys():
-                            if kb.pressed[_keyname] > 0:
-                                kb.pressed[_keyname] -= 1
-                            if kb.pressed[_keyname] <= 0:
-                                _note = kb.baseNote + getNote.get(_keyname, -100)-1
-                                player.note_off(_note, 127, kb.channel)
+                    if caps_on:
+                        ## Share sustain between instruments
+                        for _kb in keyboards.values():
+                            if keydown == True:
+                                _kb.sust = 1
+                                player.write_short(176+_kb.channel,64,127)
+                                for _fd in devices.keys():
+                                    for c in devices[_fd].active_keys():
+                                        _keyname = ecodes.KEY[c]
+                                        if _kb.pressed[_keyname]:
+                                            _kb.pressed[_keyname] += 1
+                            elif keydown == False:
+                                _kb.sust = 0
+                                player.write_short(176+_kb.channel,64,0)
+                                for _keyname in _kb.pressed.keys():
+                                    if _kb.pressed[_keyname] > 0:
+                                        _kb.pressed[_keyname] -= 1
+                                    if _kb.pressed[_keyname] <= 0:
+                                        _note = _kb.baseNote + getNote.get(_keyname, -100)-1
+                                        player.note_off(_note, 127, _kb.channel)
+                    else:
+                        ## Individual sustain for instruments
+                        if keydown == True:
+                            kb.sust = 1
+                            player.write_short(176+kb.channel,64,127)
+                            for c in devices[fd].active_keys():
+                                _keyname = ecodes.KEY[c]
+                                if kb.pressed[_keyname]:
+                                    kb.pressed[_keyname] += 1
+                        elif keydown == False:
+                            kb.sust = 0
+                            player.write_short(176+kb.channel,64,0)
+                            for _keyname in kb.pressed.keys():
+                                if kb.pressed[_keyname] > 0:
+                                    kb.pressed[_keyname] -= 1
+                                if kb.pressed[_keyname] <= 0:
+                                    _note = kb.baseNote + getNote.get(_keyname, -100)-1
+                                    player.note_off(_note, 127, kb.channel)
 
                 ## Quit
                 if keyname == "KEY_ESC":
