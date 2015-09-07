@@ -7,7 +7,6 @@ from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
 
-
 class Keyboard(object):
     def __init__(self, number, channel, inst_num, volume, reverb, velocity, baseNote, sust):
         self.number = number
@@ -18,6 +17,8 @@ class Keyboard(object):
         self.velocity = velocity
         self.baseNote = baseNote
         self.sust = sust
+        self.pressed = dict()
+
 
     def config(self):
         player.set_instrument(self.inst_num, self.channel) # Instrument
@@ -25,9 +26,9 @@ class Keyboard(object):
         player.write_short(176+self.channel,91,self.reverb) # Reverb
 
     def key_up(self, keyname):
-        if pressed[keyname] > 0: # Only turn it OFF if it's ON
-            pressed[keyname] -= 1
-            if pressed[keyname] <= 0:
+        if self.pressed[keyname] > 0: # Only turn it OFF if it's ON
+            self.pressed[keyname] -= 1
+            if self.pressed[keyname] <= 0:
                 player.note_off(note, self.velocity, self.channel)
                 print note, "off!"
 
@@ -35,9 +36,9 @@ class Keyboard(object):
         self.key_up(keyname) # If it's already ON, turn it OFF first
             
         player.note_on(note, self.velocity, self.channel)
-        pressed[keyname] += 1
+        self.pressed[keyname] += 1
         if self.sust == 1:
-            pressed[keyname] += 1
+            self.pressed[keyname] += 1
 
 
 pygame.init()
@@ -75,22 +76,6 @@ biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)) )
 biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)) )
 print "Font setup OK!"
 
-## Key-code bindings
-getCode = dict()
-pressed = dict()
-with open("keybinds.txt") as f:
-    for line in f:
-        (keyname, code) = line.split()
-        getCode[keyname] = int(code)
-        pressed[keyname] = 0
-
-## Key-note bindings
-getNote = dict()
-with open("keyseq.txt") as f:
-    for line in f:
-        (keyname, note) = line.split()
-        getNote[keyname] = int(note)
-
 
 ## Getting devices
 devices = list()
@@ -109,12 +94,31 @@ print num_devices, " keyboards detected."
 keyboards = dict()
 _number = 1
 for d in devices:
-    _keyboard = Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1], 0)
+    _keyboard = Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1]+ 12*(_number-1), 0)
     keyboards[d] = _keyboard
     _number += 1
 for kb in keyboards.values():
     kb.config()
     print "Keyboard", kb, " setup OK!"
+
+## Key-code bindings
+getCode = dict()
+with open("keybinds.txt") as f:
+    for line in f:
+        (keyname, code) = line.split()
+        getCode[keyname] = int(code)
+
+## Pressed?
+for kb in keyboards.values():
+    for keyname in getCode.keys():
+        kb.pressed[keyname] = 0
+
+## Key-note bindings
+getNote = dict()
+with open("keyseq.txt") as f:
+    for line in f:
+        (keyname, note) = line.split()
+        getNote[keyname] = int(note)
 
 # Display
 bg_color = pygame.Color(47-10,52-10,58-10)
@@ -187,6 +191,20 @@ while True:
                     if keydown == True:
                         kb.baseNote = clamp(kb.baseNote+1,24,60)
 
+                ## Volume and velocity change
+                elif keyname == "KEY_HOME":
+                    if keydown == True:
+                        if change == 1:
+                            kb.volume = clamp(kb.volume+10,0,127)
+                        else:
+                            kb.velocity = clamp(kb.velocity+10,0,127)
+                elif keyname == "KEY_END":
+                    if keydown == True:
+                        if change == 1:
+                            kb.volume = clamp(kb.volume-10,0,127)
+                        else:
+                            kb.velocity = clamp(kb.velocity-10,0,127)
+
                 ## Sustain
                 elif keyname == "KEY_SPACE":
                     if keydown == True:
@@ -194,15 +212,15 @@ while True:
                         player.write_short(176+kb.channel,64,127)
                         for c in devices[fd].active_keys():
                             _keyname = ecodes.KEY[c]
-                            if pressed[_keyname]:
-                                pressed[_keyname] += 1
+                            if kb.pressed[_keyname]:
+                                kb.pressed[_keyname] += 1
                     elif keydown == False:
                         sust = 0
                         player.write_short(176+kb.channel,64,0)
-                        for _keyname in pressed.keys():
-                            if pressed[_keyname] > 0:
-                                pressed[_keyname] -= 1
-                            if pressed[_keyname] <= 0:
+                        for _keyname in kb.pressed.keys():
+                            if kb.pressed[_keyname] > 0:
+                                kb.pressed[_keyname] -= 1
+                            if kb.pressed[_keyname] <= 0:
                                 _note = kb.baseNote + getNote.get(_keyname, -100)-1
                                 player.note_off(_note, 127, kb.channel)
 
@@ -214,6 +232,9 @@ while True:
                     player.close()
                     pygame.quit()
                     sys.exit()
+
+                ## Update all values
+                kb.config()
 
     ## Display update
     screen.fill(bg_color)
@@ -273,23 +294,6 @@ while True:
 """
 """
 
-                ## Volume and velocity change
-                elif event.key == pygame.K_HOME:
-                    if event.type == pygame.KEYDOWN:
-                        if change == 1:
-                            volume = clamp(volume+10,0,127)
-                            player.write_short(176+channel,7,volume)
-                        else:
-                            velocity = clamp(velocity+10,0,127)
-        #                y = height/3*(127-volume)/127 # Move keyboard height
-                elif event.key == pygame.K_END:
-                    if event.type == pygame.KEYDOWN:
-                        if change == 1:
-                            volume = clamp(volume-10,0,127)
-                            player.write_short(176+channel,7,volume)
-                        else:
-                            velocity = clamp(velocity-10,0,127)
-        #                y = height/3*(127-volume)/127 # Move keyboard height
 
 
 """
