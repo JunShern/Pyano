@@ -160,7 +160,6 @@ while True:
             if event.type == ecodes.EV_KEY and event.value != 2:
                 # Identify key and note
                 keyname = ecodes.KEY[event.code]
-                note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
                 keydown = event.value
                 #print keyname, note
 
@@ -176,15 +175,9 @@ while True:
                         else:
                             print "Individual mode."
 
-                ## Play note
-                if note >= kb.baseNote: # Check flag; ignore if not one of the notes
-                    if keydown == True:
-                        kb.key_down(keyname)
-                    elif keydown == False:
-                        kb.key_up(keyname)
 
                 ## Instrument change
-                elif keyname == "KEY_PAGEUP":
+                if keyname == "KEY_PAGEUP":
                     if keydown == True:
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
                         player.set_instrument(kb.inst_num, kb.channel)
@@ -262,15 +255,58 @@ while True:
                                 if kb.pressed[_keyname] <= 0:
                                     _note = kb.baseNote + getNote.get(_keyname, -100)-1
                                     player.note_off(_note, 127, kb.channel)
+                ## Memory events
+                elif keyname in ["KEY_F1","KEY_F2","KEY_F3","KEY_F4","KEY_F5",\
+                                "KEY_F6","KEY_F7","KEY_F8","KEY_F9",\
+                                "KEY_KP1","KEY_KP2","KEY_KP3","KEY_KP4","KEY_KP5",\
+                                "KEY_KP6","KEY_KP7","KEY_KP8","KEY_KP9"]:
+                    if keydown:
+                        mem = int(keyname[-1])
+                        if getCode["KEY_LEFTCTRL"] in devices[fd].active_keys() or\
+                                getCode["KEY_RIGHTCTRL"] in devices[fd].active_keys():
+                            # Save
+                            inst_mem[mem-1] = kb.inst_num
+                            base_mem[mem-1] = kb.baseNote
+                            vol_mem[mem-1] = kb.volume
+                            vel_mem[mem-1] = kb.velocity
+                            writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
+                        else:
+                            # Load
+                            inst_mem = []
+                            base_mem = []
+                            vol_mem = []
+                            vel_mem = []
+                            readMemory(inst_mem, base_mem, vol_mem, vel_mem)
+                            kb.inst_num = inst_mem[mem-1]
+                            kb.baseNote = base_mem[mem-1]
+                            kb.volume = vol_mem[mem-1]
+                            kb.velocity = vel_mem[mem-1]
+                elif keyname == "KEY_F10" or keyname == "KEY_KP0":
+                    # Load system defaults into current mem
+                    kb.inst_num = 4
+                    kb.baseNote = 36
+                    kb.volume = 50
+                    kb.velocity = 70
 
                 ## Quit
-                if keyname == "KEY_ESC":
+                elif keyname == "KEY_ESC":
                     pygame.display.quit()
                     print "Thank you for the music!"
+                    print " "
                     player.abort()
                     player.close()
                     pygame.quit()
                     sys.exit()
+
+                ## Play note
+                else:
+                    note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
+                    if note >= kb.baseNote: # Check flag; ignore if not one of the notes
+                        if keydown == True:
+                            kb.key_down(keyname)
+                        elif keydown == False:
+                            kb.key_up(keyname)
+
 
                 ## Update all values
                 kb.config()
