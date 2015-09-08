@@ -59,20 +59,6 @@ vel_mem = list()
 readMemory(inst_mem, base_mem, vol_mem, vel_mem)
 print "Memory setup OK!"
 
-## Screen setup
-infoObject = pygame.display.Info()
-width = int(infoObject.current_w * 0.9)
-height = int(infoObject.current_h * 0.9)
-screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
-pygame.mouse.set_visible(False) # Hide cursor
-print "Screen setup OK!"
-
-## Font setup
-pFont = pygame.font.SysFont("monospace", int(width/(width/15)) )
-bigFont = pygame.font.SysFont("monospace", int(width/(width/20)) )
-biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)) )
-biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)) )
-print "Font setup OK!"
 
 
 ## Getting devices
@@ -95,6 +81,20 @@ if num_devices == 0:
     player.close()
     pygame.quit()
     sys.exit()
+
+## Screen setup
+infoObject = pygame.display.Info()
+width = 550 #int(infoObject.current_w * 0.9)
+height = 60 * num_devices #int(infoObject.current_h * 0.9)
+screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
+pygame.mouse.set_visible(False) # Hide cursor
+print "Screen setup OK!"
+## Font setup
+pFont = pygame.font.SysFont("monospace", int(width/(width/17)) )
+bigFont = pygame.font.SysFont("monospace", int(width/(width/20)) )
+biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)) )
+biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)) )
+print "Font setup OK!"
 
 
 ## Setup keyboards
@@ -134,19 +134,14 @@ with open("keyseq.txt") as f:
 bg_color = pygame.Color(47-10,52-10,58-10)
 screen.fill(bg_color)
 
-i = 2
+i = 1
 for kb in keyboards.values():
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
-    w, h = bigFont.size(info)
-    text = bigFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, height*i/4-h-h))
+    w, h = pFont.size(info)
+    text = pFont.render(info, 1, (255,255,255))
+    screen.blit(text, (width/2-w/2, height*i/(num_devices+1)-h/2))
     i += 1
-
-hit_ctrl = "Hit CAPS LOCK for help!"
-w, h = bigFont.size(hit_ctrl)
-text = bigFont.render(hit_ctrl, 1, (200,200,255))
-screen.blit(text, (width/2-w/2, h))
 pygame.display.update()
 
 ## Main loop
@@ -313,13 +308,13 @@ while True:
 
     ## Display update
     screen.fill(bg_color)
-    i = 2
+    i = 1
     for kb in keyboards.values():
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-            (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
-        w, h = bigFont.size(info)
-        text = bigFont.render(info, 1, (255,255,255))
-        screen.blit(text, (width/2-w/2, height*i/4-h-h))
+                (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
+        w, h = pFont.size(info)
+        text = pFont.render(info, 1, (255,255,255))
+        screen.blit(text, (width/2-w/2, height*i/(num_devices+1)-h/2))
         i += 1
     pygame.display.update()
     
