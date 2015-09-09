@@ -191,10 +191,10 @@ while True:
                 ## Transpose 
                 elif keyname == "KEY_DOWN":
                     if keydown == True:
-                        kb.baseNote = clamp(kb.baseNote-1,24,60)
+                        kb.baseNote = clamp(kb.baseNote-1,24,72)
                 elif keyname == "KEY_UP":
                     if keydown == True:
-                        kb.baseNote = clamp(kb.baseNote+1,24,60)
+                        kb.baseNote = clamp(kb.baseNote+1,24,72)
 
                 ## Volume and velocity change
                 elif keyname == "KEY_HOME":
