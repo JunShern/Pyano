@@ -184,10 +184,10 @@ while True:
                 ## Octave change
                 elif keyname == "KEY_LEFT":
                     if keydown == True:
-                        kb.baseNote = clamp(kb.baseNote-12,24,60)
+                        kb.baseNote = clamp(kb.baseNote-12,24,72)
                 elif keyname == "KEY_RIGHT":
                     if keydown == True:
-                        kb.baseNote = clamp(kb.baseNote+12,24,60)
+                        kb.baseNote = clamp(kb.baseNote+12,24,72)
                 ## Transpose 
                 elif keyname == "KEY_DOWN":
                     if keydown == True:
