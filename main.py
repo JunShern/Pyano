@@ -16,8 +16,8 @@ class Keyboard(object):
         self.reverb = reverb
         self.velocity = velocity
         self.baseNote = baseNote
-        self.sust = sust
         self.pressed = dict()
+        self.sust = 0
 
     def config(self):
         player.set_instrument(self.inst_num, self.channel) # Instrument
@@ -34,9 +34,7 @@ class Keyboard(object):
         self.key_up(keyname) # If it's already ON, turn it OFF first
             
         player.note_on(note, self.velocity, self.channel)
-        self.pressed[keyname] += 1
-        if self.sust == 1:
-            self.pressed[keyname] += 1
+        self.pressed[keyname] += (1 + self.sust)
 
 
 pygame.init()
@@ -150,112 +148,56 @@ while True:
     r, w, x = select(devices, [], [])
     for fd in r:
         for event in devices[fd].read():
-            # Identify device
+            ## Identify device
             kb = keyboards[fd]
-            if event.type == ecodes.EV_KEY and event.value != 2:
-                # Identify key and note
+            if event.type == ecodes.EV_KEY:
+                # Identify key
                 keyname = ecodes.KEY[event.code]
-                keydown = event.value
-                #print keyname, note
-
-                # Modifiers
-                change = 1
-                if getCode["KEY_LEFTSHIFT"] in devices[fd].active_keys(): # Left shift
-                    change = 10
-                if keyname == "KEY_CAPSLOCK":
-                    if keydown == True:
+                ## KEYDOWN
+                if event.value == 1:
+                    # Modifiers
+                    change = 1
+                    if getCode["KEY_LEFTSHIFT"] in devices[fd].active_keys(): # Left shift
+                        change = 10
+                    if keyname == "KEY_CAPSLOCK":
                         caps_on = 1-caps_on
                         if caps_on:
                             print "Sharing is caring!"
                         else:
                             print "Individual mode."
-
-
-                ## Instrument change
-                if keyname == "KEY_PAGEUP":
-                    if keydown == True:
+                    # Instrument change
+                    elif keyname == "KEY_PAGEUP":
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
                         player.set_instrument(kb.inst_num, kb.channel)
-                elif keyname == "KEY_PAGEDOWN":
-                    if keydown == True:
+                    elif keyname == "KEY_PAGEDOWN":
                         kb.inst_num = clamp(kb.inst_num-change,0,127)
                         player.set_instrument(kb.inst_num, kb.channel)
-
-                ## Octave change
-                elif keyname == "KEY_LEFT":
-                    if keydown == True:
+                    # Octave change
+                    elif keyname == "KEY_LEFT":
                         kb.baseNote = clamp(kb.baseNote-12,24,72)
-                elif keyname == "KEY_RIGHT":
-                    if keydown == True:
+                    elif keyname == "KEY_RIGHT":
                         kb.baseNote = clamp(kb.baseNote+12,24,72)
-                ## Transpose 
-                elif keyname == "KEY_DOWN":
-                    if keydown == True:
+                    # Transpose 
+                    elif keyname == "KEY_DOWN":
                         kb.baseNote = clamp(kb.baseNote-1,24,72)
-                elif keyname == "KEY_UP":
-                    if keydown == True:
+                    elif keyname == "KEY_UP":
                         kb.baseNote = clamp(kb.baseNote+1,24,72)
-
-                ## Volume and velocity change
-                elif keyname == "KEY_HOME":
-                    if keydown == True:
+                    # Volume and velocity change
+                    elif keyname == "KEY_HOME":
                         if change == 1:
                             kb.volume = clamp(kb.volume+10,0,127)
                         else:
                             kb.velocity = clamp(kb.velocity+10,0,127)
-                elif keyname == "KEY_END":
-                    if keydown == True:
+                    elif keyname == "KEY_END":
                         if change == 1:
                             kb.volume = clamp(kb.volume-10,0,127)
                         else:
                             kb.velocity = clamp(kb.velocity-10,0,127)
-
-                ## Sustain
-                elif keyname == "KEY_SPACE":
-                    if caps_on:
-                        ## Share sustain between instruments
-                        for _kb in keyboards.values():
-                            if keydown == True:
-                                _kb.sust = 1
-                                player.write_short(176+_kb.channel,64,127)
-                                for _fd in devices.keys():
-                                    for c in devices[_fd].active_keys():
-                                        _keyname = ecodes.KEY[c]
-                                        if _kb.pressed[_keyname]:
-                                            _kb.pressed[_keyname] += 1
-                            elif keydown == False:
-                                _kb.sust = 0
-                                player.write_short(176+_kb.channel,64,0)
-                                for _keyname in _kb.pressed.keys():
-                                    if _kb.pressed[_keyname] > 0:
-                                        _kb.pressed[_keyname] -= 1
-                                    if _kb.pressed[_keyname] <= 0:
-                                        _note = _kb.baseNote + getNote.get(_keyname, -100)-1
-                                        player.note_off(_note, 127, _kb.channel)
-                    else:
-                        ## Individual sustain for instruments
-                        if keydown == True:
-                            kb.sust = 1
-                            player.write_short(176+kb.channel,64,127)
-                            for c in devices[fd].active_keys():
-                                _keyname = ecodes.KEY[c]
-                                if kb.pressed[_keyname]:
-                                    kb.pressed[_keyname] += 1
-                        elif keydown == False:
-                            kb.sust = 0
-                            player.write_short(176+kb.channel,64,0)
-                            for _keyname in kb.pressed.keys():
-                                if kb.pressed[_keyname] > 0:
-                                    kb.pressed[_keyname] -= 1
-                                if kb.pressed[_keyname] <= 0:
-                                    _note = kb.baseNote + getNote.get(_keyname, -100)-1
-                                    player.note_off(_note, 127, kb.channel)
-                ## Memory events
-                elif keyname in ["KEY_F1","KEY_F2","KEY_F3","KEY_F4","KEY_F5",\
-                                "KEY_F6","KEY_F7","KEY_F8","KEY_F9",\
-                                "KEY_KP1","KEY_KP2","KEY_KP3","KEY_KP4","KEY_KP5",\
-                                "KEY_KP6","KEY_KP7","KEY_KP8","KEY_KP9"]:
-                    if keydown:
+                    # Memory events
+                    elif keyname in ["KEY_F1","KEY_F2","KEY_F3","KEY_F4","KEY_F5",\
+                                    "KEY_F6","KEY_F7","KEY_F8","KEY_F9",\
+                                    "KEY_KP1","KEY_KP2","KEY_KP3","KEY_KP4","KEY_KP5",\
+                                    "KEY_KP6","KEY_KP7","KEY_KP8","KEY_KP9"]:
                         mem = int(keyname[-1])
                         if getCode["KEY_LEFTCTRL"] in devices[fd].active_keys() or\
                                 getCode["KEY_RIGHTCTRL"] in devices[fd].active_keys():
@@ -276,30 +218,75 @@ while True:
                             kb.baseNote = base_mem[mem-1]
                             kb.volume = vol_mem[mem-1]
                             kb.velocity = vel_mem[mem-1]
-                elif keyname == "KEY_F10" or keyname == "KEY_KP0":
-                    # Load system defaults into current mem
-                    kb.inst_num = 4
-                    kb.baseNote = 36
-                    kb.volume = 50
-                    kb.velocity = 70
-
-                ## Quit
-                elif keyname == "KEY_ESC":
-                    pygame.display.quit()
-                    print "Thank you for the music!"
-                    print " "
-                    player.abort()
-                    player.close()
-                    pygame.quit()
-                    sys.exit()
-
-                ## Play note
-                else:
-                    note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
-                    if note >= kb.baseNote: # Check flag; ignore if not one of the notes
-                        if keydown == True:
+                    elif keyname == "KEY_F10" or keyname == "KEY_KP0":
+                        # Load system defaults into current mem
+                        kb.inst_num = 4
+                        kb.baseNote = 36
+                        kb.volume = 50
+                        kb.velocity = 70
+                    # Sustain
+                    elif keyname == "KEY_SPACE":
+                        if caps_on: # Share sustain between instruments
+                            for _kb in keyboards.values():
+                                _kb.sust = 1
+                                #player.write_short(176+_kb.channel,64,127)
+                                for _fd in devices.keys():
+                                    for c in devices[_fd].active_keys():
+                                        _keyname = ecodes.KEY[c]
+                                        if _kb.pressed[_keyname] > 0:
+                                            _kb.pressed[_keyname] += 1
+                        else: # Individual sustain for instruments
+                            #player.write_short(176+kb.channel,64,127)
+                            kb.sust = 1
+                            for c in devices[fd].active_keys():
+                                _keyname = ecodes.KEY[c]
+                                if kb.pressed[_keyname] > 0:
+                                    kb.pressed[_keyname] += 1
+                    # Quit
+                    elif keyname == "KEY_ESC":
+                        pygame.display.quit()
+                        print "Thank you for the music!"
+                        print " "
+                        player.abort()
+                        player.close()
+                        pygame.quit()
+                        sys.exit()
+                    # Play note
+                    else:
+                        note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
+                        if note >= kb.baseNote: # Check flag; ignore if not one of the notes
                             kb.key_down(keyname)
-                        elif keydown == False:
+
+
+                ## KEY UP
+                elif event.value == 0:
+                    # Sustain
+                    if keyname == "KEY_SPACE":
+                        if caps_on: # Share sustain between instruments
+                            for _kb in keyboards.values():
+                                _kb.sust = 0
+                                #player.write_short(176+_kb.channel,64,0)
+                                for _keyname in _kb.pressed.keys():
+                                    if _kb.pressed[_keyname] > 1:
+                                        _kb.pressed[_keyname] = 1
+                                    if _kb.pressed[_keyname] == 1:
+                                        _kb.pressed[_keyname] = 0
+                                        _note = _kb.baseNote + getNote.get(_keyname, -100)-1
+                                        player.note_off(_note, 127, _kb.channel)
+                        else: # Individual sustain for instruments
+                            kb.sust = 0
+                            #player.write_short(176+kb.channel,64,0)
+                            for _keyname in kb.pressed.keys():
+                                if kb.pressed[_keyname] > 1:
+                                    kb.pressed[_keyname] = 1
+                                if kb.pressed[_keyname] == 1:
+                                    kb.pressed[_keyname] = 0
+                                    _note = kb.baseNote + getNote.get(_keyname, -100)-1
+                                    player.note_off(_note, 127, kb.channel)
+                    # Play note
+                    else:
+                        note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
+                        if note >= kb.baseNote: # Check flag; ignore if not one of the notes
                             kb.key_up(keyname)
 
 
