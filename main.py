@@ -152,9 +152,9 @@ while True:
         for event in devices[fd].read():
             ## Identify device
             kb = keyboards[fd]
-            if event.type == ecodes.EV_KEY:
-                # Identify key
-                keyname = ecodes.KEY[event.code]
+            # Identify key
+            keyname = ecodes.KEY[event.code]
+            if event.type == ecodes.EV_KEY and keyname in getCode.keys():
                 ## KEYDOWN
                 if event.value == 1:
                     # Modifiers
