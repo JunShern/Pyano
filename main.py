@@ -18,6 +18,7 @@ class Keyboard(object):
         self.baseNote = baseNote
         self.pressed = dict()
         self.sust = 0
+        self.noteOf = dict() # Which note?
 
     def config(self):
         player.set_instrument(self.inst_num, self.channel) # Instrument
@@ -120,8 +121,6 @@ with open("keybinds.txt") as f:
 for kb in keyboards.values():
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
-## Which note?
-noteOf = dict()
 
 ## Key-note bindings
 getNote = dict()
@@ -255,9 +254,9 @@ while True:
                         sys.exit()
                     # Play note
                     else:
-                        noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
-                        if noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
-                            kb.key_down(keyname, noteOf[keyname])
+                        kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
+                        if kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
+                            kb.key_down(keyname, kb.noteOf[keyname])
 
 
                 ## KEY UP
@@ -274,7 +273,7 @@ while True:
                                     elif _kb.pressed[_keyname] == 1:
                                         _kb.pressed[_keyname] = 0
                                         #_note = _kb.baseNote + getNote.get(_keyname, -100)-1
-                                        player.note_off(noteOf[_keyname], 127, _kb.channel)
+                                        player.note_off(kb.noteOf[_keyname], 127, _kb.channel)
                         else: # Individual sustain for instruments
                             kb.sust = 0
                             #player.write_short(176+kb.channel,64,0)
@@ -288,8 +287,8 @@ while True:
                     # Play note
                     else:
                         #note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
-                        if keyname in noteOf.keys(): #noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
-                            kb.key_up(keyname, noteOf[keyname])
+                        if keyname in kb.noteOf.keys(): #kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
+                            kb.key_up(keyname, kb.noteOf[keyname])
 
 
                 ## Update all values
