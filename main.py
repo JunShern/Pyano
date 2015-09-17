@@ -273,7 +273,7 @@ while True:
                                     elif _kb.pressed[_keyname] == 1:
                                         _kb.pressed[_keyname] = 0
                                         #_note = _kb.baseNote + getNote.get(_keyname, -100)-1
-                                        player.note_off(kb.noteOf[_keyname], 127, _kb.channel)
+                                        player.note_off(_kb.noteOf[_keyname], 127, _kb.channel)
                         else: # Individual sustain for instruments
                             kb.sust = 0
                             #player.write_short(176+kb.channel,64,0)
