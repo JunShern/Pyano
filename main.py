@@ -307,55 +307,6 @@ while True:
     pygame.display.update()
     
 """
-    info = "INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-            (inst_num, baseNote, volume, velocity)
-    w, h = bigFont.size(info)
-    text = bigFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, height-h-h))
-"""
-"""
-                ## Memory events
-                if mods & pygame.KMOD_CTRL:
-                    if event.type == pygame.KEYDOWN:
-                        if event.key in [pygame.K_1, pygame.K_2, pygame.K_3,
-                                        pygame.K_4, pygame.K_5, pygame.K_6,
-                                        pygame.K_7, pygame.K_8, pygame.K_9]:
-                            mem = int(key[0])
-                            if change == 10:
-                                # Save
-                                inst_mem[mem-1] = inst_num
-                                base_mem[mem-1] = baseNote
-                                vol_mem[mem-1] = volume
-                                vel_mem[mem-1] = velocity
-                                writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
-                            else:
-                                # Load
-                                inst_mem = []
-                                base_mem = []
-                                vol_mem = []
-                                vel_mem = []
-                                readMemory(inst_mem, base_mem, vol_mem, vel_mem)
-                                inst_num = inst_mem[mem-1]
-                                player.set_instrument(inst_num,channel)
-                                baseNote = base_mem[mem-1]
-                                volume = vol_mem[mem-1]
-                                player.write_short(176+channel,7,volume)
-                                velocity = vel_mem[mem-1]
-                        elif event.key == pygame.K_0:
-                            # Load system defaults into current mem
-                            inst_num = 4
-                            player.set_instrument(inst_num,channel)
-                            baseNote = 36
-                            volume = 50
-                            player.write_short(176+channel,7,volume)
-                            velocity = 70
-"""
-"""
-
-
-
-"""
-"""
     # Draw
     drawKeyboard(x,y)
     if mods & pygame.KMOD_CAPS:
