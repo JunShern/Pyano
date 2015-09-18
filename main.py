@@ -145,7 +145,7 @@ for kb in keyboards.values():
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
-    text = pFont.render(info, 1, (255,255,255))
+    text = pFont.render(info, 1, (0,0,0))
     screen.blit(text, (width/2-w/2, 350+30- h/2 + i*60))
     i += 1
 pygame.display.update()
@@ -311,7 +311,7 @@ while True:
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
-        text = pFont.render(info, 1, (255,255,255))
+        text = pFont.render(info, 1, (0,0,0))
         screen.blit(text, (width/2-w/2, 350+30- h/2 + i*60))
         i += 1
     pygame.display.update()
