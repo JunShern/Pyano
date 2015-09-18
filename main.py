@@ -83,8 +83,8 @@ if num_devices == 0:
 
 ## Screen setup
 infoObject = pygame.display.Info()
-width = 550 #int(infoObject.current_w * 0.9)
-height = 60 * num_devices #int(infoObject.current_h * 0.9)
+width = 545 #int(infoObject.current_w * 0.9)
+height = 360 + 60*num_devices #int(infoObject.current_h * 0.9)
 screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
@@ -130,16 +130,18 @@ with open("keyseq.txt") as f:
         getNote[keyname] = int(note)
 
 # Display
-bg_color = pygame.Color(47-10,52-10,58-10)
+bg_color = pygame.Color(15,15,15)
 screen.fill(bg_color)
+img = pygame.image.load("LogoResized.png")
+screen.blit(img, (0,0))
 
-i = 1
+i = 0
 for kb in keyboards.values():
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
     text = pFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, height*i/(num_devices+1)-h/2))
+    screen.blit(text, (width/2-w/2, 360 + 25 + i*60))
     i += 1
 pygame.display.update()
 
@@ -296,13 +298,14 @@ while True:
 
     ## Display update
     screen.fill(bg_color)
-    i = 1
+    screen.blit(img, (0,0))
+    i = 0
     for kb in keyboards.values():
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
         text = pFont.render(info, 1, (255,255,255))
-        screen.blit(text, (width/2-w/2, height*i/(num_devices+1)-h/2))
+        screen.blit(text, (width/2-w/2, 360 + 25 + i*60))
         i += 1
     pygame.display.update()
     
