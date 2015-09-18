@@ -84,7 +84,7 @@ if num_devices == 0:
 ## Screen setup
 infoObject = pygame.display.Info()
 width = 545 #int(infoObject.current_w * 0.9)
-height = 360 + 60*num_devices #int(infoObject.current_h * 0.9)
+height = 350 + 60*num_devices #int(infoObject.current_h * 0.9)
 screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
@@ -135,13 +135,15 @@ screen.fill(bg_color)
 img = pygame.image.load("LogoResized.png")
 screen.blit(img, (0,0))
 
+colours = [(200,50,50),(50,50,200)]
 i = 0
 for kb in keyboards.values():
+    pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
     text = pFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, 360 + 25 + i*60))
+    screen.blit(text, (width/2-w/2, 350+30- h/2 + i*60))
     i += 1
 pygame.display.update()
 
@@ -305,7 +307,7 @@ while True:
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
         text = pFont.render(info, 1, (255,255,255))
-        screen.blit(text, (width/2-w/2, 360 + 25 + i*60))
+        screen.blit(text, (width/2-w/2, 350 + h/2 + i*60))
         i += 1
     pygame.display.update()
     
