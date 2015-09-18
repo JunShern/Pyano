@@ -83,6 +83,7 @@ if num_devices == 0:
 
 ## Screen setup
 infoObject = pygame.display.Info()
+pygame.display.set_caption("Pyano")
 width = 545 #int(infoObject.current_w * 0.9)
 height = 350 + 60*num_devices #int(infoObject.current_h * 0.9)
 screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
