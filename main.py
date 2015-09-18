@@ -136,8 +136,8 @@ screen.fill(bg_color)
 img = pygame.image.load("LogoResized.png")
 screen.blit(img, (0,0))
 
-colours = [(242,151,84),(128,206,185),(221,221,221)]
-colours_ = [(204,50,60),(65,170,196),(159,152,126)]
+colours = [(128,206,185),(221,221,221),(242,151,84)]
+colours_ = [(65,170,196),(159,152,126),(204,50,60)]
 
 i = 0
 for kb in keyboards.values():
