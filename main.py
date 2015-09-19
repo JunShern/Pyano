@@ -307,8 +307,10 @@ while True:
     screen.blit(img, (0,0))
     i = 0
     for kb in keyboards.values():
-        pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
-        pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
+        if sum(kb.pressed.values()) > 0:
+            pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
+        else:
+            pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
