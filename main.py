@@ -2,6 +2,7 @@ import pygame
 import pygame.midi
 import sys
 import time
+import random
 from helpers import *
 from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
@@ -38,6 +39,24 @@ class Keyboard(object):
         self.pressed[keyname] += (1 + self.sust)
 
 
+def randomWalk(val, low, high):
+    step = 8
+    if val+step > high:
+        return val-step
+    elif val-step < low:
+        return val+step
+    else:
+        if random.random()>0.5:
+            return val+step
+        else:
+            return val-step
+
+def colourWalk(colour, bound):
+    r = randomWalk(colour[0], colour[0]-bound, colour[0]+bound)
+    g = randomWalk(colour[1], colour[1]-bound, colour[1]+bound)
+    b = randomWalk(colour[2], colour[2]-bound, colour[2]+bound)
+    return colorClamp(r,g,b)
+        
 pygame.init()
 
 ## MIDI init
@@ -57,8 +76,6 @@ vol_mem = list()
 vel_mem = list()
 readMemory(inst_mem, base_mem, vol_mem, vel_mem)
 print "Memory setup OK!"
-
-
 
 ## Getting devices
 devices = list()
@@ -84,8 +101,9 @@ if num_devices == 0:
 ## Screen setup
 infoObject = pygame.display.Info()
 pygame.display.set_caption("Pyano")
-width = 545 #int(infoObject.current_w * 0.9)
-height = 350 + 60*num_devices #int(infoObject.current_h * 0.9)
+img = pygame.image.load("LogoResized.png")
+width = int(infoObject.current_w) #img.get_rect().size[0] #
+height = int(infoObject.current_h) #img.get_rect().size[1] + 60*num_devices 
 screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
@@ -95,7 +113,6 @@ bigFont = pygame.font.SysFont("monospace", int(width/(width/20)) )
 biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)) )
 biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)) )
 print "Font setup OK!"
-
 
 ## Setup keyboards
 keyboards = dict()
@@ -133,16 +150,16 @@ with open("keyseq.txt") as f:
 # Display
 bg_color = pygame.Color(15,15,15)
 screen.fill(bg_color)
-img = pygame.image.load("LogoResized.png")
-screen.blit(img, (0,0))
+screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
 
-colours = [(128,206,185),(221,221,221),(242,151,84)]
-colours_ = [(65,170,196),(159,152,126),(204,50,60)]
-
+colours = [(242,151,84),(221,221,221),(128,206,185)]
+colours_ = [(204,50,60),(159,152,126),(65,170,196)]
 i = 0
 for kb in keyboards.values():
-    pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
-    pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
+    pygame.draw.circle(screen, colours_[i], (width/2,height/2), 270+i*40, 30)
+    pygame.draw.circle(screen, colours[i], (width/2,height/2), 260+i*40, 10)
+    #pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
+    #pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
@@ -153,10 +170,10 @@ pygame.display.update()
 
 ## Main loop
 while True:
-
     r, w, x = select(devices, [], [])
     for fd in r:
         for event in devices[fd].read():
+            print "Other event!"
             ## Identify device
             kb = keyboards[fd]
             # Identify key
@@ -304,13 +321,13 @@ while True:
 
     ## Display update
     screen.fill(bg_color)
-    screen.blit(img, (0,0))
+    screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
+    print "width", width, "height", height, "size[0]", img.get_rect().size[0], "size[1]", img.get_rect().size[1]
     i = 0
     for kb in keyboards.values():
         if sum(kb.pressed.values()) > 0:
-            pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
-        else:
-            pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
+            colours_[i] = colourWalk(colours_[i], 20)
+        pygame.draw.circle(screen, colours_[i], (width/2,height/2), 270+i*40, 30)
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
