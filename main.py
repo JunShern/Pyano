@@ -173,7 +173,6 @@ while True:
     r, w, x = select(devices, [], [])
     for fd in r:
         for event in devices[fd].read():
-            print "Other event!"
             ## Identify device
             kb = keyboards[fd]
             # Identify key
@@ -322,7 +321,6 @@ while True:
     ## Display update
     screen.fill(bg_color)
     screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
-    print "width", width, "height", height, "size[0]", img.get_rect().size[0], "size[1]", img.get_rect().size[1]
     i = 0
     for kb in keyboards.values():
         if sum(kb.pressed.values()) > 0:
