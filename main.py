@@ -40,7 +40,7 @@ class Keyboard(object):
 
 
 def randomWalk(val, low, high):
-    step = 8
+    step = 3
     if val+step > high:
         return val-step
     elif val-step < low:
@@ -51,10 +51,10 @@ def randomWalk(val, low, high):
         else:
             return val-step
 
-def colourWalk(colour, bound):
-    r = randomWalk(colour[0], colour[0]-bound, colour[0]+bound)
-    g = randomWalk(colour[1], colour[1]-bound, colour[1]+bound)
-    b = randomWalk(colour[2], colour[2]-bound, colour[2]+bound)
+def colourWalk(colour, ori, bound):
+    r = randomWalk(colour[0], ori[0]-bound, ori[0]+bound)
+    g = randomWalk(colour[1], ori[1]-bound, ori[1]+bound)
+    b = randomWalk(colour[2], ori[2]-bound, ori[2]+bound)
     return colorClamp(r,g,b)
         
 pygame.init()
@@ -326,7 +326,7 @@ while True:
     i = 0
     for kb in keyboards.values():
         if sum(kb.pressed.values()) > 0:
-            colours_[i] = colourWalk(colours_[i], 20)
+            colours_[i] = colourWalk(colours_[i], colours[i], 30)
         pygame.draw.circle(screen, colours_[i], (width/2,height/2), 270+i*40, 30)
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
