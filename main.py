@@ -47,19 +47,17 @@ def drawMemory():
     screen.blit(s, (0,0))
     # Text colour
     c = pygame.Color(255,255,255)
-    #if change == 10:
-    #    c = pygame.Color(160,255,255)
     # Text
-    info = "Memory Slot 0: INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-            (4, 36, 50, 70)
-    w, h = bigFont.size(info)
-    text = bigFont.render(info, 1, (255,255,255))
+    info = "Default Slot : INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
+            (4, 36, 70, 70)
+    w, h = pFont.size(info)
+    text = pFont.render(info, 1, (255,255,255))
     screen.blit(text, (width/2-w/2, 200))
     for num in range(1,10):
         info = "Memory Slot %i: INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (num, inst_mem[num-1], base_mem[num-1], vol_mem[num-1], vel_mem[num-1])
-        w, h = bigFont.size(info)
-        text = bigFont.render(info, 1, c)
+        w, h = pFont.size(info)
+        text = pFont.render(info, 1, c)
         screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
 
 def randomWalk(val, low, high, step):
@@ -202,8 +200,8 @@ screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[
 pygame.display.update()
 
 ## Main loop
+change = 1
 while True:
-    change = 1
     r, w, x = select(devices, [], [])
     for fd in r:
         for event in devices[fd].read():
@@ -214,9 +212,8 @@ while True:
             if event.type == ecodes.EV_KEY and keyname in getCode.keys():
                 ## KEYDOWN
                 if event.value == 1:
-                    print change
                     # Modifiers
-                    if keyname == "KEY_LEFTSHIFT": # Left shift
+                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
                         change = 10
                     elif keyname == "KEY_CAPSLOCK":
                         caps_on = 1-caps_on
@@ -258,14 +255,14 @@ while True:
                                     "KEY_KP1","KEY_KP2","KEY_KP3","KEY_KP4","KEY_KP5",\
                                     "KEY_KP6","KEY_KP7","KEY_KP8","KEY_KP9"]:
                         mem = int(keyname[-1])
-                        if getCode["KEY_LEFTCTRL"] in devices[fd].active_keys() or\
-                                getCode["KEY_RIGHTCTRL"] in devices[fd].active_keys():
+                        if change == 10: # Shift down
                             # Save
                             inst_mem[mem-1] = kb.inst_num
                             base_mem[mem-1] = kb.baseNote
                             vol_mem[mem-1] = kb.volume
                             vel_mem[mem-1] = kb.velocity
                             writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
+                            print "Save successful!"
                         else:
                             # Load
                             inst_mem = []
@@ -281,7 +278,7 @@ while True:
                         # Load system defaults into current mem
                         kb.inst_num = 4
                         kb.baseNote = 36
-                        kb.volume = 50
+                        kb.volume = 70
                         kb.velocity = 70
                     # Sustain
                     elif keyname == "KEY_SPACE":
@@ -319,8 +316,11 @@ while True:
 
                 ## KEY UP
                 elif event.value == 0:
+                    # Shift up
+                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
+                        change = 1
                     # Sustain
-                    if keyname == "KEY_SPACE":
+                    elif keyname == "KEY_SPACE":
                         if caps_on: # Share sustain between instruments
                             for _kb in keyboards.values():
                                 _kb.sust = 0
@@ -375,10 +375,7 @@ while True:
         n += 1
     screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
     if change == 10: # Draw memory if SHIFT is held
-        print "SHIFT DOWN!"
         drawMemory()
-    elif change == 1:
-        print "SHIFT NOT DOWN!"
     pygame.display.update()
     
 """
