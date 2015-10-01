@@ -39,6 +39,28 @@ class Keyboard(object):
         player.note_on(note, self.velocity, self.channel)
         self.pressed[keyname] += (1 + self.sust)
 
+def drawMemory():
+    # Transparent surface
+    s = pygame.Surface((width,height))
+    s.set_alpha(150)
+    s.fill(bg_color)
+    screen.blit(s, (0,0))
+    # Text colour
+    c = pygame.Color(255,255,255)
+    #if change == 10:
+    #    c = pygame.Color(160,255,255)
+    # Text
+    info = "Memory Slot 0: INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
+            (4, 36, 50, 70)
+    w, h = bigFont.size(info)
+    text = bigFont.render(info, 1, (255,255,255))
+    screen.blit(text, (width/2-w/2, 200))
+    for num in range(1,10):
+        info = "Memory Slot %i: INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
+                (num, inst_mem[num-1], base_mem[num-1], vol_mem[num-1], vel_mem[num-1])
+        w, h = bigFont.size(info)
+        text = bigFont.render(info, 1, c)
+        screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
 
 def randomWalk(val, low, high, step):
     if val+step > high:
@@ -181,6 +203,7 @@ pygame.display.update()
 
 ## Main loop
 while True:
+    change = 1
     r, w, x = select(devices, [], [])
     for fd in r:
         for event in devices[fd].read():
@@ -191,11 +214,11 @@ while True:
             if event.type == ecodes.EV_KEY and keyname in getCode.keys():
                 ## KEYDOWN
                 if event.value == 1:
+                    print change
                     # Modifiers
-                    change = 1
-                    if getCode["KEY_LEFTSHIFT"] in devices[fd].active_keys(): # Left shift
+                    if keyname == "KEY_LEFTSHIFT": # Left shift
                         change = 10
-                    if keyname == "KEY_CAPSLOCK":
+                    elif keyname == "KEY_CAPSLOCK":
                         caps_on = 1-caps_on
                         if caps_on:
                             print "Sharing is caring!"
@@ -351,6 +374,11 @@ while True:
         screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
         n += 1
     screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
+    if change == 10: # Draw memory if SHIFT is held
+        print "SHIFT DOWN!"
+        drawMemory()
+    elif change == 1:
+        print "SHIFT NOT DOWN!"
     pygame.display.update()
     
 """
