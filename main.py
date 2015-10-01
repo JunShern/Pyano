@@ -3,6 +3,7 @@ import pygame.midi
 import sys
 import time
 import random
+from pygame import gfxdraw
 from helpers import *
 from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
@@ -39,8 +40,7 @@ class Keyboard(object):
         self.pressed[keyname] += (1 + self.sust)
 
 
-def randomWalk(val, low, high):
-    step = 3
+def randomWalk(val, low, high, step):
     if val+step > high:
         return val-step
     elif val-step < low:
@@ -52,9 +52,10 @@ def randomWalk(val, low, high):
             return val-step
 
 def colourWalk(colour, ori, bound):
-    r = randomWalk(colour[0], ori[0]-bound, ori[0]+bound)
-    g = randomWalk(colour[1], ori[1]-bound, ori[1]+bound)
-    b = randomWalk(colour[2], ori[2]-bound, ori[2]+bound)
+    step = 5
+    r = randomWalk(colour[0], ori[0]-bound, ori[0]+bound, step)
+    g = randomWalk(colour[1], ori[1]-bound, ori[1]+bound, step)
+    b = randomWalk(colour[2], ori[2]-bound, ori[2]+bound, step)
     return colorClamp(r,g,b)
         
 pygame.init()
@@ -148,24 +149,32 @@ with open("keyseq.txt") as f:
         getNote[keyname] = int(note)
 
 # Display
-bg_color = pygame.Color(15,15,15)
+#colours_ = [(242,151,84),(221,221,221),(128,206,185)]
+colours = [(65,170,196),(204,50,60),(159,152,126)]
+colours_ = colours
+circle_w = 8
+circle_w_ = 8
+circle_r = 190
+circle_r_ = 190
+bg_color = pygame.Color(5,5,5)
+in_color = pygame.Color(15,15,15)
 screen.fill(bg_color)
-screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
+pygame.draw.circle(screen, in_color, (width/2,height/2), circle_r, 0)
 
-colours = [(242,151,84),(221,221,221),(128,206,185)]
-colours_ = [(204,50,60),(159,152,126),(65,170,196)]
-i = 0
+n = 0
 for kb in keyboards.values():
-    pygame.draw.circle(screen, colours_[i], (width/2,height/2), 270+i*40, 30)
-    pygame.draw.circle(screen, colours[i], (width/2,height/2), 260+i*40, 10)
-    #pygame.draw.rect(screen, colours_[i], (0,350+i*60,width,60))
-    #pygame.draw.rect(screen, colours[i], (10,360+i*60,width-20,40))
+    i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
+    #pygame.draw.circle(screen, colours[i], (width/2,height/2), circle_r+i*40, circle_w)
+    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r+i*40, colours[n])
+    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r-circle_w+i*40, in_color)
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
-    text = pFont.render(info, 1, (0,0,0))
-    screen.blit(text, (width/2-w/2, 350+30- h/2 + i*60))
-    i += 1
+    text = pFont.render(info, 1, (255,255,255))
+    screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
+    n += 1
+
+screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
 pygame.display.update()
 
 ## Main loop
@@ -320,18 +329,24 @@ while True:
 
     ## Display update
     screen.fill(bg_color)
-    screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
-    i = 0
+    pygame.draw.circle(screen, (24,24,24), (width/2,height/2), circle_r_, 0)
+    n = 0
     for kb in keyboards.values():
+        i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
         if sum(kb.pressed.values()) > 0:
-            colours_[i] = colourWalk(colours_[i], colours[i], 30)
-        pygame.draw.circle(screen, colours_[i], (width/2,height/2), 270+i*40, 30)
+            colours_[n] = colourWalk(colours_[n], colours[n], 30)
+            #circle_w_ = randomWalk(circle_w_, circle_w-3, circle_w+3, 1)
+            circle_r_ = randomWalk(circle_r_, circle_r-2, circle_r+8, 1)
+        #pygame.draw.circle(screen, colours_[i], (width/2,height/2), circle_r_+i*40, circle_w_)
+        pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_+i*40, colours[n])
+        pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_-circle_w_+i*40, in_color)
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
-        text = pFont.render(info, 1, (0,0,0))
-        screen.blit(text, (width/2-w/2, 350+30- h/2 + i*60))
-        i += 1
+        text = pFont.render(info, 1, (255,255,255))
+        screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
+        n += 1
+    screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
     pygame.display.update()
     
 """
