@@ -167,6 +167,8 @@ for kb in keyboards.values():
     #pygame.draw.circle(screen, colours[i], (width/2,height/2), circle_r+i*40, circle_w)
     pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r+i*40, colours[n])
     pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r-circle_w+i*40, in_color)
+    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r-circle_w+i*40, colours[n])
+    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r+i*40, colours[n])
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
@@ -340,6 +342,8 @@ while True:
         #pygame.draw.circle(screen, colours_[i], (width/2,height/2), circle_r_+i*40, circle_w_)
         pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_+i*40, colours[n])
         pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_-circle_w_+i*40, in_color)
+        pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_-circle_w_+i*40, colours[n])
+        pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_+i*40, colours[n])
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
