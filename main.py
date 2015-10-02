@@ -358,7 +358,7 @@ while True:
     n = 0
     for kb in keyboards.values():
         i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
-        if sum(kb.pressed.values()) > 0:
+        if sum(kb.pressed.values()) > 0 or kb.sust > 0:
             colours_[n] = colourWalk(colours_[n], colours[n], 30)
             #circle_w_ = randomWalk(circle_w_, circle_w-3, circle_w+3, 1)
             circle_r_ = randomWalk(circle_r_, circle_r-2, circle_r+8, 1)
