@@ -129,10 +129,10 @@ screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
 ## Font setup
-pFont = pygame.font.SysFont("monospace", int(width/(width/17)) )
-bigFont = pygame.font.SysFont("monospace", int(width/(width/20)) )
-biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)) )
-biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)) )
+pFont = pygame.font.SysFont("monospace", int(width/(width/17)), True)
+bigFont = pygame.font.SysFont("monospace", int(width/(width/20)), True)
+biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)), True)
+biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)), True)
 print "Font setup OK!"
 
 ## Setup keyboards
