@@ -140,7 +140,7 @@ pygame.display.set_caption("Pyano")
 img = pygame.image.load("LogoResized.png")
 width = int(infoObject.current_w) #img.get_rect().size[0] #
 height = int(infoObject.current_h) #img.get_rect().size[1] + 60*num_devices 
-screen = pygame.display.set_mode((width,height), pygame.RESIZABLE)
+screen = pygame.display.set_mode((width,height), pygame.FULLSCREEN) #pygame.RESIZABLE
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
 ## Font setup
