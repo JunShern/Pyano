@@ -60,6 +60,20 @@ def drawMemory():
         text = pFont.render(info, 1, c)
         screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
 
+def smootherWalk(val, low, high, rad_step):
+    if val+rad_step[0] >= high:
+        rad_step[0] = -rad_step[0]
+        return val+rad_step[0]
+    elif val+rad_step[0] <= low:
+        rad_step[0] = -rad_step[0]
+        return val+rad_step[0]
+    else:
+        return val+rad_step[0]
+#        if random.random()>0.5:
+#            return val+rad_step[0]
+#        else:
+#            return val-rad_step[0]
+
 def randomWalk(val, low, high, step):
     if val+step > high:
         return val-step
@@ -182,6 +196,8 @@ in_color = pygame.Color(15,15,15)
 screen.fill(bg_color)
 pygame.draw.circle(screen, in_color, (width/2,height/2), circle_r, 0)
 
+rad_step = [1]
+walk_count = 1
 n = 0
 
 for kb in keyboards.values():
@@ -363,7 +379,9 @@ while True:
     for kb in keyboards.values():
         if sum(kb.pressed.values()) > 0 or kb.sust > 0:
             colour_ = colourWalk(colour_, colour, 80)
-            circle_r_ = randomWalk(circle_r_, circle_r-2, circle_r+8, 1)
+            walk_count = 1 - walk_count
+            if walk_count == 1:
+                circle_r_ = smootherWalk(circle_r_, circle_r-2, circle_r+8, rad_step)
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
