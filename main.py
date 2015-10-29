@@ -171,8 +171,8 @@ with open("keyseq.txt") as f:
 
 # Display
 #colours_ = [(242,151,84),(221,221,221),(128,206,185)]
-colours = [(65,170,196),(204,50,60),(159,152,126)]
-colours_ = colours
+colour = (65,170,196) #,(204,50,60),(159,152,126)]
+colour_ = colour
 circle_w = 8
 circle_w_ = 8
 circle_r = 230
@@ -183,10 +183,6 @@ screen.fill(bg_color)
 pygame.draw.circle(screen, in_color, (width/2,height/2), circle_r, 0)
 
 n = 0
-pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r, colours[n])
-pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r-circle_w, in_color)
-pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r-circle_w, colours[n])
-pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r, colours[n])
 
 for kb in keyboards.values():
     i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
@@ -197,6 +193,11 @@ for kb in keyboards.values():
     text = pFont.render(info, 1, (255,255,255))
     screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
     n += 1
+
+pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r, colour)
+pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r-circle_w, in_color)
+pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r-circle_w, colour)
+pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r, colour)
 
 screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
 pygame.display.update()
@@ -358,25 +359,23 @@ while True:
     screen.fill(bg_color)
     pygame.draw.circle(screen, (24,24,24), (width/2,height/2), circle_r_, 0)
     n = 0
-
-    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_, colours[n])
-    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_-circle_w_, in_color)
-    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_-circle_w_, colours[n])
-    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_, colours[n])
-
+    # Stats
     for kb in keyboards.values():
-        i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
         if sum(kb.pressed.values()) > 0 or kb.sust > 0:
-            colours_[n] = colourWalk(colours_[n], colours[n], 30)
-            #circle_w_ = randomWalk(circle_w_, circle_w-3, circle_w+3, 1)
+            colour_ = colourWalk(colour_, colour, 80)
             circle_r_ = randomWalk(circle_r_, circle_r-2, circle_r+8, 1)
-        #pygame.draw.circle(screen, colours_[i], (width/2,height/2), circle_r_+i*40, circle_w_)
         info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
         text = pFont.render(info, 1, (255,255,255))
         screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
         n += 1
+    # Circle
+    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_, colour_)
+    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_-circle_w_, in_color)
+    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_-circle_w_, colour_)
+    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_, colour_)
+
     screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
     if change == 10: # Draw memory if SHIFT is held
         drawMemory()
