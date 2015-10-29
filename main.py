@@ -102,7 +102,8 @@ print "Memory setup OK!"
 devices = list()
 for fn in list_devices():
     dev = InputDevice(fn)
-    if "eyboard" in dev.name:
+    rate = dev.repeat[0] # Extract keyboard repeat rate 
+    if rate > 0: ## Will be zero unless it's a keyboard! :)
         print dev
         devices.append(dev.fn)
 
