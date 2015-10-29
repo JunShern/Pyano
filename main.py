@@ -201,13 +201,12 @@ walk_count = 1
 n = 0
 
 for kb in keyboards.values():
-    i = len(keyboards.values()) - n # Need to start from outermost ring for circle drawing to work
     #pygame.draw.circle(screen, colours[i], (width/2,height/2), circle_r+i*40, circle_w)
     info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
     w, h = pFont.size(info)
     text = pFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
+    screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
     n += 1
 
 pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r, colour)
@@ -386,7 +385,7 @@ while True:
                 (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
         w, h = pFont.size(info)
         text = pFont.render(info, 1, (255,255,255))
-        screen.blit(text, (width/2-w/2, height - 100 - h/2 - n*60))
+        screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
         n += 1
     # Circle
     pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_, colour_)
