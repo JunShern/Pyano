@@ -140,7 +140,7 @@ pygame.display.set_caption("Pyano")
 img = pygame.image.load("LogoResized.png")
 width = int(infoObject.current_w) #img.get_rect().size[0] #
 height = int(infoObject.current_h) #img.get_rect().size[1] + 60*num_devices 
-screen = pygame.display.set_mode((width,height), pygame.FULLSCREEN) #pygame.RESIZABLE
+screen = pygame.display.set_mode((width,height), pygame.RESIZABLE) #pygame.RESIZABLE
 pygame.mouse.set_visible(False) # Hide cursor
 print "Screen setup OK!"
 ## Font setup
@@ -237,8 +237,24 @@ while True:
                         caps_on = 1-caps_on
                         if caps_on:
                             print "Sharing is caring!"
+                            # Ungrab keyboard
+                            for _fd in devices.keys():
+                                try:
+                                    devices[_fd].ungrab();
+                                    print "Ungrabbed keyboard"
+                                except IOError:
+                                    print "Already ungrabbed."
+                            print ""
                         else:
                             print "Individual mode."
+                            # Grab keyboard
+                            for _fd in devices.keys():
+                                try:
+                                    devices[_fd].grab();
+                                    print "Grabbed keyboard"
+                                except IOError:
+                                    print "Already grabbed."
+                            print ""
                     # Instrument change
                     elif keyname == "KEY_PAGEUP":
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
@@ -318,6 +334,11 @@ while True:
                                     kb.pressed[_keyname] += 1
                     # Quit
                     elif keyname == "KEY_ESC":
+                        for _fd in devices.keys():
+                            try:
+                                devices[_fd].ungrab();
+                            except IOError:
+                                print "Already ungrabbed."
                         pygame.display.quit()
                         print "Thank you for the music!"
                         print " "
