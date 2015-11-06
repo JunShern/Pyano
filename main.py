@@ -319,14 +319,12 @@ while True:
                         if caps_on: # Share sustain between instruments
                             for _kb in keyboards.values():
                                 _kb.sust = 1
-                                #player.write_short(176+_kb.channel,64,127)
                                 for _fd in devices.keys():
                                     for c in devices[_fd].active_keys():
                                         _keyname = ecodes.KEY[c]
                                         if _kb.pressed[_keyname] > 0:
                                             _kb.pressed[_keyname] += 1
                         else: # Individual sustain for instruments
-                            #player.write_short(176+kb.channel,64,127)
                             kb.sust = 1
                             for c in devices[fd].active_keys():
                                 _keyname = ecodes.KEY[c]
