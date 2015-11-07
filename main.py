@@ -161,8 +161,9 @@ for kb in keyboards.values():
     kb.config()
     print "Keyboard", kb, " setup OK!"
 
-## Initialize caps
+## Initialize toggle variables
 caps_on = 1
+share_sust = 1
 
 ## Key-code bindings
 getCode = dict()
@@ -236,22 +237,20 @@ while True:
                     elif keyname == "KEY_CAPSLOCK":
                         caps_on = 1-caps_on
                         if caps_on:
-                            print "Sharing is caring!"
                             # Ungrab keyboard
                             for _fd in devices.keys():
                                 try:
                                     devices[_fd].ungrab();
-                                    print "Ungrabbed keyboard"
+                                    print "Ungrabbed keyboard", devices[_fd].name
                                 except IOError:
                                     print "Already ungrabbed."
                             print ""
                         else:
-                            print "Individual mode."
                             # Grab keyboard
                             for _fd in devices.keys():
                                 try:
                                     devices[_fd].grab();
-                                    print "Grabbed keyboard"
+                                    print "Grabbed keyboard", devices[_fd].name
                                 except IOError:
                                     print "Already grabbed."
                             print ""
@@ -316,7 +315,15 @@ while True:
                         kb.velocity = 70
                     # Sustain
                     elif keyname == "KEY_SPACE":
-                        if caps_on: # Share sustain between instruments
+                        if change == 10: # Shift is pressed, toggle sustain-sharing
+                            share_sust = 1 - share_sust
+                            if share_sust == 1:
+                                print "Sharing is caring!"
+                                print ""
+                            else:
+                                print "Individual mode."
+                                print ""
+                        if share_sust: # Share sustain between instruments
                             for _kb in keyboards.values():
                                 _kb.sust = 1
                                 for _fd in devices.keys():
@@ -358,7 +365,7 @@ while True:
                         change = 1
                     # Sustain
                     elif keyname == "KEY_SPACE":
-                        if caps_on: # Share sustain between instruments
+                        if share_sust: # Share sustain between instruments
                             for _kb in keyboards.values():
                                 _kb.sust = 0
                                 #player.write_short(176+_kb.channel,64,0)
