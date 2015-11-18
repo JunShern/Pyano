@@ -1,7 +1,7 @@
 ###About
 ----
 
-Pyano is a free and open-source MIDI program which allows you to use your keyboard (as in QWERTY keyboard) as a keyboard instrument (as in pianos, harpsichords, organs).
+Pyano is a free and open-source virtual MIDI controller program which allows you to use your keyboard (as in QWERTY keyboard) as a keyboard instrument (as in pianos, harpsichords, organs).
 
 Born of a need for an instrument to play while away from home, the Pyano project hopes to allow musicians to express themselves with nothing more than a computer or laptop, and optionally many external USB keyboards. 
 
@@ -25,7 +25,7 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 
 1. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano).
 
-2. Run the software synthesizer, make sure it is working and ready to accept MIDI input. Don't forget to pick a SoundFont file on your synthesizer! (FluidR3_GM.sf2 has been tested and is great)
+2. Run the software synthesizer, make sure it is working and ready to accept MIDI input. Don't forget to pick a SoundFont file on your synthesizer! (FluidR3\_GM.sf2 has been tested and is great)
 
 3. Execute main.py in administrator mode (this is necessary for the software to be able to recognize different keyboard devices).
 
