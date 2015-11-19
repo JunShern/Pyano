@@ -15,7 +15,8 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 
 ####Prerequisites
 
-1. The latest version of Pyano (the one that supports multiple-keyboards as multiple instruments) can only be run on Linux, and has only been tested on Ubuntu 14.04, though other flavours of Linux should work.
+1. The latest version of Pyano (the one that supports multiple-keyboards as multiple instruments) can only be run on Linux, and has only been tested on Ubuntu 14.04, though other flavours of Linux should work.  
+   Alternatively, there is an older version on a separate branch, version1, which should work on other operating systems out of the box (tested on Windows 8 and Windows 10).
 
 2. Pyano is built on [Python 2.7](https://www.python.org/), the [Pygame library](http://www.pygame.org/hifi.html) and the [Python EvDev](https://python-evdev.readthedocs.org/en/latest/) library, so you need to have these installed on your computer.
 
@@ -32,6 +33,14 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 4. You should see a list of available output devices, choose the one which corresponds to your software synthesizer. 
 
 5. Make some music! 
+
+###Screenshots
+----
+Latest version:
+![multikey][https://raw.githubusercontent.com/JunShern/Pyano/master/multikey.png]
+
+Older version (in branch version1), showing keyboard layout:
+![version1][https://raw.githubusercontent.com/JunShern/Pyano/master/version1.png]
 
 ###Features
 ----
