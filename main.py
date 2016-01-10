@@ -39,6 +39,15 @@ class Keyboard(object):
         player.note_on(note, self.velocity, self.channel)
         self.pressed[keyname] += (1 + self.sust)
 
+def strNote(noteNum):
+    octave = int(noteNum/12) - 1;
+    notes = "C C# D D# E F F# G G# A A# B"
+    notes = notes.split(' ')
+    n = noteNum % 12
+    octave = noteNum/12
+    name = "%s%d" %(notes[n], octave)
+    return name
+
 def drawMemory():
     # Transparent surface
     s = pygame.Surface((width,height))
@@ -48,14 +57,14 @@ def drawMemory():
     # Text colour
     c = pygame.Color(255,255,255)
     # Text
-    info = "Default Slot : INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-            (4, 36, 70, 70)
+    info = "Default Slot : INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+            (4, strNote(36), 70, 70)
     w, h = pFont.size(info)
     text = pFont.render(info, 1, (255,255,255))
     screen.blit(text, (width/2-w/2, 200))
     for num in range(1,10):
-        info = "Memory Slot %i: INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-                (num, inst_mem[num-1], base_mem[num-1], vol_mem[num-1], vel_mem[num-1])
+        info = "Memory Slot %i: INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+                (num, inst_mem[num-1], strNote(base_mem[num-1]), vol_mem[num-1], vel_mem[num-1])
         w, h = pFont.size(info)
         text = pFont.render(info, 1, c)
         screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
@@ -203,8 +212,8 @@ n = 0
 
 for kb in keyboards.values():
     #pygame.draw.circle(screen, colours[i], (width/2,height/2), circle_r+i*40, circle_w)
-    info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-            (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
+    info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+            (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
     w, h = pFont.size(info)
     text = pFont.render(info, 1, (255,255,255))
     screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
@@ -407,8 +416,8 @@ while True:
             walk_count = 1 - walk_count
             if walk_count == 1:
                 circle_r_ = smootherWalk(circle_r_, circle_r-2, circle_r+8, rad_step)
-        info = "KB %02d | INST %03d | BASE %03d | VOL %03d | VEL %03d" %\
-                (kb.number, kb.inst_num, kb.baseNote, kb.volume, kb.velocity)
+        info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+                (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
         w, h = pFont.size(info)
         text = pFont.render(info, 1, (255,255,255))
         screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
