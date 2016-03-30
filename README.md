@@ -38,11 +38,11 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 ----
 Latest version:  
 
-![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/multikey.png?raw=true "multikey")
+![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
 
 Older version (in branch version1), showing keyboard layout:  
 
-![version1](https://raw.githubusercontent.com/JunShern/Pyano/master/version1.png?raw=true "version1")
+![version1](https://raw.githubusercontent.com/JunShern/Pyano/master/img/version1.png?raw=true "version1")
 
 
 ###Features
