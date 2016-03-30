@@ -1,7 +1,6 @@
 import pygame
 import sys
 import time
-import random
 import keyboard
 import midi as md
 from pygame import gfxdraw
@@ -9,15 +8,6 @@ from helpers import *
 from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
-
-def strNote(noteNum):
-    octave = int(noteNum/12) - 1;
-    notes = "C C# D D# E F F# G G# A A# B"
-    notes = notes.split(' ')
-    n = noteNum % 12
-    octave = noteNum/12
-    name = "%s%d" %(notes[n], octave)
-    return name
 
 def drawMemory():
     # Transparent surface
@@ -40,37 +30,6 @@ def drawMemory():
         text = pFont.render(info, 1, c)
         screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
 
-def smootherWalk(val, low, high, rad_step):
-    if val+rad_step[0] >= high:
-        rad_step[0] = -rad_step[0]
-        return val+rad_step[0]
-    elif val+rad_step[0] <= low:
-        rad_step[0] = -rad_step[0]
-        return val+rad_step[0]
-    else:
-        return val+rad_step[0]
-#        if random.random()>0.5:
-#            return val+rad_step[0]
-#        else:
-#            return val-rad_step[0]
-
-def randomWalk(val, low, high, step):
-    if val+step > high:
-        return val-step
-    elif val-step < low:
-        return val+step
-    else:
-        if random.random()>0.5:
-            return val+step
-        else:
-            return val-step
-
-def colourWalk(colour, ori, bound):
-    step = 5
-    r = randomWalk(colour[0], ori[0]-bound, ori[0]+bound, step)
-    g = randomWalk(colour[1], ori[1]-bound, ori[1]+bound, step)
-    b = randomWalk(colour[2], ori[2]-bound, ori[2]+bound, step)
-    return colorClamp(r,g,b)
         
 pygame.init()
 midi = md.Midi()
