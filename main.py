@@ -1,43 +1,14 @@
 import pygame
-import pygame.midi
 import sys
 import time
 import random
+import keyboard
+import midi as md
 from pygame import gfxdraw
 from helpers import *
 from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
-
-class Keyboard(object):
-    def __init__(self, number, channel, inst_num, volume, reverb, velocity, baseNote, sust):
-        self.number = number
-        self.channel = channel
-        self.inst_num = inst_num
-        self.volume = volume
-        self.reverb = reverb
-        self.velocity = velocity
-        self.baseNote = baseNote
-        self.pressed = dict()
-        self.sust = 0
-        self.noteOf = dict() # Which note?
-
-    def config(self):
-        player.set_instrument(self.inst_num, self.channel) # Instrument
-        player.write_short(176+self.channel,7,self.volume) # Volume
-        player.write_short(176+self.channel,91,self.reverb) # Reverb
-
-    def key_up(self, keyname, note):
-        if self.pressed[keyname] > 0: # Only turn it OFF if it's ON
-            self.pressed[keyname] -= 1
-            if self.pressed[keyname] <= 0:
-                player.note_off(note, self.velocity, self.channel)
-
-    def key_down(self, keyname, note):
-        self.key_up(keyname, note) # If it's already ON, turn it OFF first
-            
-        player.note_on(note, self.velocity, self.channel)
-        self.pressed[keyname] += (1 + self.sust)
 
 def strNote(noteNum):
     octave = int(noteNum/12) - 1;
@@ -102,15 +73,8 @@ def colourWalk(colour, ori, bound):
     return colorClamp(r,g,b)
         
 pygame.init()
-
-## MIDI init
-pygame.midi.init()
-print "Choose an output device:"
-for i in range(0,pygame.midi.get_count()):
-    print "%i : %s" %(i, pygame.midi.get_device_info(i))
-dev = int(raw_input(">> " ))
-player = pygame.midi.Output(dev)
-print "MIDI setup OK!"
+midi = md.Midi()
+midi.setup()
 
 ## Memory setup
 mem = 1
@@ -138,8 +102,6 @@ if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
     pygame.display.quit()
-    player.abort()
-    player.close()
     pygame.quit()
     sys.exit()
 
@@ -163,11 +125,11 @@ print "Font setup OK!"
 keyboards = dict()
 _number = 1
 for d in devices:
-    _keyboard = Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1]+ 12*(_number-1), 0)
+    _keyboard = keyboard.Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1]+ 12*(_number-1), 0)
     keyboards[d] = _keyboard
     _number += 1
 for kb in keyboards.values():
-    kb.config()
+    kb.config(midi)
     print "Keyboard", kb, " setup OK!"
 
 ## Initialize toggle variables
@@ -266,10 +228,10 @@ while True:
                     # Instrument change
                     elif keyname == "KEY_PAGEUP":
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
-                        player.set_instrument(kb.inst_num, kb.channel)
+                        midi.setInstrument(kb.inst_num, kb.channel)
                     elif keyname == "KEY_PAGEDOWN":
                         kb.inst_num = clamp(kb.inst_num-change,0,127)
-                        player.set_instrument(kb.inst_num, kb.channel)
+                        midi.setInstrument(kb.inst_num, kb.channel)
                     # Octave change
                     elif keyname == "KEY_LEFT":
                         kb.baseNote = clamp(kb.baseNote-12,24,72)
@@ -356,15 +318,14 @@ while True:
                         pygame.display.quit()
                         print "Thank you for the music!"
                         print " "
-                        player.abort()
-                        player.close()
+                        midi.close()
                         pygame.quit()
                         sys.exit()
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
                         if kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
-                            kb.key_down(keyname, kb.noteOf[keyname])
+                            kb.key_down(midi, keyname, kb.noteOf[keyname])
 
 
                 ## KEY UP
@@ -377,33 +338,31 @@ while True:
                         if share_sust: # Share sustain between instruments
                             for _kb in keyboards.values():
                                 _kb.sust = 0
-                                #player.write_short(176+_kb.channel,64,0)
                                 for _keyname in _kb.pressed.keys():
                                     if _kb.pressed[_keyname] > 1:
                                         _kb.pressed[_keyname] = 1
                                     elif _kb.pressed[_keyname] == 1:
                                         _kb.pressed[_keyname] = 0
                                         #_note = _kb.baseNote + getNote.get(_keyname, -100)-1
-                                        player.note_off(_kb.noteOf[_keyname], 127, _kb.channel)
+                                        midi.noteOff(_kb.noteOf[_keyname], _kb.channel)
                         else: # Individual sustain for instruments
                             kb.sust = 0
-                            #player.write_short(176+kb.channel,64,0)
                             for _keyname in kb.pressed.keys():
                                 if kb.pressed[_keyname] > 1:
                                     kb.pressed[_keyname] = 1
                                 elif kb.pressed[_keyname] == 1:
                                     kb.pressed[_keyname] = 0
                                     _note = kb.baseNote + getNote.get(_keyname, -100)-1
-                                    player.note_off(_note, 127, kb.channel)
+                                    midi.noteOff(_note, kb.channel)
                     # Play note
                     else:
                         #note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
                         if keyname in kb.noteOf.keys(): #kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
-                            kb.key_up(keyname, kb.noteOf[keyname])
+                            kb.key_up(midi, keyname, kb.noteOf[keyname])
 
 
                 ## Update all values
-                kb.config()
+                kb.config(midi)
 
     ## Display update
     screen.fill(bg_color)
