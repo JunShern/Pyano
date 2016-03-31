@@ -15,7 +15,7 @@ class Midi(object):
         print "MIDI setup OK!"
 
     def close(self):
-        self.player.abort()
+        #self.player.abort()
         self.player.close()
 
     def setInstrument(self, inst_num, channel):

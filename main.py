@@ -1,39 +1,17 @@
-import pygame
 import sys
 import time
 import keyboard
 import midi as md
-from pygame import gfxdraw
+import display 
 from helpers import *
 from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
 
-def drawMemory():
-    # Transparent surface
-    s = pygame.Surface((width,height))
-    s.set_alpha(150)
-    s.fill(bg_color)
-    screen.blit(s, (0,0))
-    # Text colour
-    c = pygame.Color(255,255,255)
-    # Text
-    info = "Default Slot : INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-            (4, strNote(36), 70, 70)
-    w, h = pFont.size(info)
-    text = pFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, 200))
-    for num in range(1,10):
-        info = "Memory Slot %i: INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-                (num, inst_mem[num-1], strNote(base_mem[num-1]), vol_mem[num-1], vel_mem[num-1])
-        w, h = pFont.size(info)
-        text = pFont.render(info, 1, c)
-        screen.blit(text, (width/2-w/2, 200 + num*(height-400)/9))
-
-        
-pygame.init()
 midi = md.Midi()
 midi.setup()
+disp = display.Display()
+disp.setup(fullscreen=0)
 
 ## Memory setup
 mem = 1
@@ -60,25 +38,11 @@ print num_devices, "keyboards detected."
 if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
-    pygame.display.quit()
-    pygame.quit()
+    disp.close()
+    midi.close()
     sys.exit()
 
-## Screen setup
-infoObject = pygame.display.Info()
-pygame.display.set_caption("Pyano")
-img = pygame.image.load("LogoResized.png")
-width = int(infoObject.current_w) #img.get_rect().size[0] #
-height = int(infoObject.current_h) #img.get_rect().size[1] + 60*num_devices 
-screen = pygame.display.set_mode((width,height), pygame.RESIZABLE) #pygame.RESIZABLE
-pygame.mouse.set_visible(False) # Hide cursor
-print "Screen setup OK!"
-## Font setup
-pFont = pygame.font.SysFont("monospace", int(width/(width/17)), True)
-bigFont = pygame.font.SysFont("monospace", int(width/(width/20)), True)
-biggerFont = pygame.font.SysFont("monospace", int(width/(width/30)), True)
-biggestFont = pygame.font.SysFont("monospace", int(width/(width/40)), True)
-print "Font setup OK!"
+disp.setup(fullscreen = 0)
 
 ## Setup keyboards
 keyboards = dict()
@@ -114,39 +78,17 @@ with open("keyseq.txt") as f:
         (keyname, note) = line.split()
         getNote[keyname] = int(note)
 
-# Display
-#colours_ = [(242,151,84),(221,221,221),(128,206,185)]
-colour = (65,170,196) #,(204,50,60),(159,152,126)]
-colour_ = colour
-circle_w = 8
-circle_w_ = 8
-circle_r = 230
-circle_r_ = 230
-bg_color = pygame.Color(5,5,5)
-in_color = pygame.Color(15,15,15)
-screen.fill(bg_color)
-pygame.draw.circle(screen, in_color, (width/2,height/2), circle_r, 0)
-
-rad_step = [1]
-walk_count = 1
-n = 0
-
+kbCount = 0
 for kb in keyboards.values():
-    #pygame.draw.circle(screen, colours[i], (width/2,height/2), circle_r+i*40, circle_w)
     info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-            (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-    w, h = pFont.size(info)
-    text = pFont.render(info, 1, (255,255,255))
-    screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
-    n += 1
+        (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+    disp.drawStatus(info, kbCount)
+    disp.update()
+    kbCount += 1
 
-pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r, colour)
-pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r-circle_w, in_color)
-pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r-circle_w, colour)
-pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r, colour)
-
-screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
-pygame.display.update()
+disp.drawCircle()
+disp.drawLogo()
+disp.update()
 
 ## Main loop
 change = 1
@@ -274,11 +216,11 @@ while True:
                                 devices[_fd].ungrab();
                             except IOError:
                                 print "Already ungrabbed."
-                        pygame.display.quit()
+                        disp.close()
+                        midi.close()
+                        disp.pygame.quit()
                         print "Thank you for the music!"
                         print " "
-                        midi.close()
-                        pygame.quit()
                         sys.exit()
                     # Play note
                     else:
@@ -323,31 +265,20 @@ while True:
                 ## Update all values
                 kb.config(midi)
 
-    ## Display update
-    screen.fill(bg_color)
-    pygame.draw.circle(screen, (24,24,24), (width/2,height/2), circle_r_, 0)
-    n = 0
+    disp.fillBackground()
     # Stats
+    kbCount = 0
     for kb in keyboards.values():
         if sum(kb.pressed.values()) > 0 or kb.sust > 0:
-            colour_ = colourWalk(colour_, colour, 80)
-            walk_count = 1 - walk_count
-            if walk_count == 1:
-                circle_r_ = smootherWalk(circle_r_, circle_r-2, circle_r+8, rad_step)
+            disp.pulseCircle()
         info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-                (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-        w, h = pFont.size(info)
-        text = pFont.render(info, 1, (255,255,255))
-        screen.blit(text, (width/2-w/2, (height/2+circle_r) + 20 + n*(h+10) ))
-        n += 1
-    # Circle
-    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_, colour_)
-    pygame.gfxdraw.filled_circle(screen, width/2, height/2, circle_r_-circle_w_, in_color)
-    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_-circle_w_, colour_)
-    pygame.gfxdraw.aacircle(screen, width/2, height/2, circle_r_, colour_)
+            (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+        disp.drawStatus(info, kbCount)
+        kbCount += 1
 
-    screen.blit(img, (width/2-img.get_rect().size[0]/2,height/2-img.get_rect().size[1]/2))
+    # Circle
+    disp.drawCircle()
+    disp.drawLogo()
     if change == 10: # Draw memory if SHIFT is held
-        drawMemory()
-    pygame.display.update()
-    
+        disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+    disp.update()
