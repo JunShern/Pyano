@@ -8,15 +8,19 @@ from helpers import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
 
-## Midi
+## Initialize toggle variables
+caps_on = 1
+share_sust = 1
+
+## Midi setup
 midi = md.Midi()
 midi.setup()
 
-## Display
+## Display setup
 disp = display.Display()
 disp.setup(fullscreen=0)
 
-## Memory 
+## Memory setup
 mem = 1
 inst_mem = list()
 base_mem = list()
@@ -31,6 +35,12 @@ with open("keybinds.txt") as f:
     for line in f:
         (keyname, code) = line.split()
         getCode[keyname] = int(code)
+## Key-note bindings
+getNote = dict()
+with open("keyseq.txt") as f:
+    for line in f:
+        (keyname, note) = line.split()
+        getNote[keyname] = int(note)
 
 ## Getting devices
 devices = list()
@@ -52,8 +62,6 @@ if num_devices == 0:
     midi.close()
     sys.exit()
 
-disp.setup(fullscreen = 0)
-
 ## Setup keyboards
 keyboards = dict()
 _number = 1
@@ -61,34 +69,23 @@ for d in devices:
     _keyboard = keyboard.Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1]+ 12*(_number-1), 0)
     keyboards[d] = _keyboard
     _number += 1
+
+disp.fillBackground()
+## Configure keyboards
+kbCount = 0
 for kb in keyboards.values():
     kb.config(midi)
     print "Keyboard", kb, " setup OK!"
-
-## Initialize toggle variables
-caps_on = 1
-share_sust = 1
-
-## Pressed?
-for kb in keyboards.values():
+    ## Pressed?
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
-
-## Key-note bindings
-getNote = dict()
-with open("keyseq.txt") as f:
-    for line in f:
-        (keyname, note) = line.split()
-        getNote[keyname] = int(note)
-
-kbCount = 0
-for kb in keyboards.values():
+    ## Display status
     info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
         (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
     disp.drawStatus(info, kbCount)
     disp.update()
     kbCount += 1
-
+## Draw
 disp.drawCircle()
 disp.drawLogo()
 disp.update()
