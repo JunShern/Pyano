@@ -3,24 +3,34 @@ import time
 import keyboard
 import midi as md
 import display 
+import memory
 from helpers import *
-from memory import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
 
+## Midi
 midi = md.Midi()
 midi.setup()
+
+## Display
 disp = display.Display()
 disp.setup(fullscreen=0)
 
-## Memory setup
+## Memory 
 mem = 1
 inst_mem = list()
 base_mem = list()
 vol_mem = list()
 vel_mem = list()
-readMemory(inst_mem, base_mem, vol_mem, vel_mem)
+memory.readMemory(inst_mem, base_mem, vol_mem, vel_mem)
 print "Memory setup OK!"
+
+## Key-code bindings
+getCode = dict()
+with open("keybinds.txt") as f:
+    for line in f:
+        (keyname, code) = line.split()
+        getCode[keyname] = int(code)
 
 ## Getting devices
 devices = list()
@@ -58,13 +68,6 @@ for kb in keyboards.values():
 ## Initialize toggle variables
 caps_on = 1
 share_sust = 1
-
-## Key-code bindings
-getCode = dict()
-with open("keybinds.txt") as f:
-    for line in f:
-        (keyname, code) = line.split()
-        getCode[keyname] = int(code)
 
 ## Pressed?
 for kb in keyboards.values():
@@ -166,7 +169,7 @@ while True:
                             base_mem[mem-1] = kb.baseNote
                             vol_mem[mem-1] = kb.volume
                             vel_mem[mem-1] = kb.velocity
-                            writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
+                            memory.writeMemory(inst_mem, base_mem, vol_mem, vel_mem)
                             print "Save successful!"
                         else:
                             # Load
