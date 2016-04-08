@@ -174,7 +174,7 @@ while True:
                             base_mem = []
                             vol_mem = []
                             vel_mem = []
-                            readMemory(inst_mem, base_mem, vol_mem, vel_mem)
+                            memory.readMemory(inst_mem, base_mem, vol_mem, vel_mem)
                             kb.inst_num = inst_mem[mem-1]
                             kb.baseNote = base_mem[mem-1]
                             kb.volume = vol_mem[mem-1]
