@@ -179,11 +179,12 @@ while True:
                             kb.baseNote = base_mem[mem-1]
                             kb.volume = vol_mem[mem-1]
                             kb.velocity = vel_mem[mem-1]
+                            kb.channel = kb.number-1 # Make sure to return from percussion mode
                     elif keyname == "KEY_F10" or keyname == "KEY_KP0":
-                        # Load system defaults into current mem
-                        kb.inst_num = 4
-                        kb.baseNote = 36
-                        kb.volume = 70
+                        # Load channel for percussion
+                        kb.channel = 9 # Channel 10 (0-indexed) is the special channel for percussion
+                        kb.baseNote = 26 # First drum sample for Fluid_GM3 soundfont begins at 26
+                        kb.volume = 80
                         kb.velocity = 70
                     # Sustain
                     elif keyname == "KEY_SPACE":
