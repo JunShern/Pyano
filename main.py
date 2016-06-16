@@ -184,8 +184,8 @@ while True:
                         # Load channel for percussion
                         kb.channel = 9 # Channel 10 (0-indexed) is the special channel for percussion
                         kb.baseNote = 26 # First drum sample for Fluid_GM3 soundfont begins at 26
-                        kb.volume = 80
-                        kb.velocity = 70
+                        kb.volume = 90
+                        kb.velocity = 80
                     # Sustain
                     elif keyname == "KEY_SPACE":
                         if change == 10: # Shift is pressed, toggle sustain-sharing
