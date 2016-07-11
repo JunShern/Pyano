@@ -100,7 +100,7 @@ for kb in keyboards.values():
     disp.update()
     kbCount += 1
 ## Draw
-disp.drawCircle()
+#disp.drawCircle()
 disp.drawLogo()
 disp.update()
 
@@ -285,7 +285,7 @@ while True:
         disp.drawStatus(info, kbCount)
         kbCount += 1
     # Logo
-    disp.drawCircle()
+    #disp.drawCircle()
     disp.drawLogo()
     # Draw memory if SHIFT is held
     if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
