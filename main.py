@@ -66,7 +66,7 @@ if num_devices == 0:
 keyboards = dict()
 _number = 1
 for d in devices:
-    _keyboard = keyboard.Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1]+ 12*(_number-1), 0)
+    _keyboard = keyboard.Keyboard(_number, _number-1, inst_mem[mem-1], vol_mem[mem-1], 30, 70, base_mem[mem-1], 0)
     keyboards[d] = _keyboard
     _number += 1
 
