@@ -95,3 +95,17 @@ class Display(object):
     	self.walk_count = 1 - self.walk_count
     	if self.walk_count == 1:
             self.circle_r_ = smootherWalk(self.circle_r_, self.circle_r-2, self.circle_r+8, self.rad_step)
+
+    def drawQuitMenu(self):
+        # Transparent surface
+        s = pygame.Surface((self.width,self.height))
+        s.set_alpha(150)
+        s.fill(self.bg_color)
+        self.screen.blit(s, (0,0))
+        # Text colour
+        c = pygame.Color(255,255,255)
+        # Text
+        info = "Press ENTER to Quit"
+        w, h = self.pFont.size(info)
+        text = self.pFont.render(info, 1, c)
+        self.screen.blit(text, (self.width/2-w/2, self.height/2-h/2))

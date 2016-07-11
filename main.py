@@ -8,6 +8,20 @@ from helpers import *
 from evdev import InputDevice, list_devices, categorize, ecodes
 from select import select
 
+def quitPyano() :
+    for _fd in devices.keys():
+        try:
+            devices[_fd].ungrab();
+        except IOError:
+            print "Already ungrabbed."
+    disp.close()
+    midi.close()
+    disp.pygame.quit()
+    print "Thank you for the music!"
+    print " "
+    sys.exit()
+    return 
+
 ## Initialize toggle variables
 caps_on = 1
 share_sust = 1
@@ -92,6 +106,7 @@ disp.update()
 
 ## Main loop
 change = 1
+showQuitMenu = False
 while True:
     r, w, x = select(devices, [], [])
     for fd in r:
@@ -103,6 +118,9 @@ while True:
             if event.type == ecodes.EV_KEY and keyname in getCode.keys():
                 ## KEYDOWN
                 if event.value == 1:
+                    if showQuitMenu == True:
+                        if keyname == "KEY_ENTER": quitPyano()
+                        else: showQuitMenu = False
                     # Modifiers
                     if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
                         change = 10
@@ -212,17 +230,7 @@ while True:
                                     kb.pressed[_keyname] += 1
                     # Quit
                     elif keyname == "KEY_ESC":
-                        for _fd in devices.keys():
-                            try:
-                                devices[_fd].ungrab();
-                            except IOError:
-                                print "Already ungrabbed."
-                        disp.close()
-                        midi.close()
-                        disp.pygame.quit()
-                        print "Thank you for the music!"
-                        print " "
-                        sys.exit()
+                        showQuitMenu = True;
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
@@ -276,10 +284,12 @@ while True:
             (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
         disp.drawStatus(info, kbCount)
         kbCount += 1
-
-    # Circle
+    # Logo
     disp.drawCircle()
     disp.drawLogo()
-    if change == 10: # Draw memory if SHIFT is held
-        disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+    # Draw memory if SHIFT is held
+    if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+    # Quit menu
+    if showQuitMenu == True: disp.drawQuitMenu() 
+
     disp.update()
