@@ -1,0 +1,87 @@
+#!/bin/bash
+
+Pyano () {
+	cd /home/junshern/Scripts/Pyano/dev/
+	echo "Starting Pyano..."
+	sudo python main.py 
+}
+
+# Script to launch audio servers for music-making
+case $1 in
+	start )
+		echo "Please select an audio device: (enter card number)"
+		aplay -l | grep card
+		read -p "> " hw
+		echo "You selected HW:$hw"
+
+		# Start JACK
+		echo
+		echo "Starting JACK..."
+		pasuspender --\
+			jackd -d alsa --device hw:$hw --rate 44100 --period 128 \
+			&>/tmp/jackd.out &
+
+		# Start fluidsynth
+		echo
+		echo "Starting Fluidsynth..."
+		fluidsynth --server --no-shell --audio-driver=jack \
+			--connect-jack-outputs --reverb=0 --gain=0.8 \
+			/usr/share/sounds/sf2/FluidR3_GM.sf2 \
+			&>/tmp/fluidsynth.out &
+		sleep 1
+
+		echo
+		if pgrep jackd && pgrep fluidsynth
+		then	echo "Audio servers running"
+		else 
+			echo "There was a problem starting the audio servers."
+		fi
+
+        # Check for Arduino Leonardo Looper - if not present, no need SooperLooper
+        if aconnect -i | grep --quiet 'Arduino Leonardo'; then
+            echo Looper found 
+            # Start SooperLooper
+            SL_NAME="sooperlooper"
+            OSC_PORT=9951
+            echo
+            sudo killall -q -9 -w $SL_NAME # Only one SooperLooper
+            echo "Starting SooperLooper..."
+            sooperlooper --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
+            #slgui --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
+            while ! nc -4 -u -z -v localhost $OSC_PORT; do sleep 1; done # Wait for SL to be ready
+            # Connect to JACK
+            jack_connect system:capture_1 $SL_NAME:common_in_1
+            jack_connect system:capture_1 $SL_NAME:common_in_2
+            jack_connect $SL_NAME:common_out_2 system:playback_2
+            jack_connect $SL_NAME:common_out_1 system:playback_1
+            jack_connect fluidsynth:l_00 $SL_NAME:common_in_1
+            jack_connect fluidsynth:r_00 $SL_NAME:common_in_2
+            # MIDI connections with ALSA
+            aconnect 'Arduino Leonardo':0 'sooperlooper':0
+        else 
+            echo No looper found, running Vanilla Pyano
+        fi
+
+		# Launch Pyano in new terminal
+		echo
+		Pyano
+
+		# Launch Onion Looper handler script
+		#echo
+		#echo "Starting handler script for Onion Looper..."
+		#gnome-terminal --title="Onion" -e 'python /home/junshern/Scripts/OnionLooper/serial_to_osc.py'
+		
+		;;
+	stop )
+		wmctrl -F -c Onion
+		killall sooperlooper
+		killall slgui
+		killall fluidsynth
+		killall jackd
+		echo "Thank you for the music."
+		;;
+	* )
+		echo "Please specify start or stop..."
+		;;
+esac
+
