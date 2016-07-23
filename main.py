@@ -14,9 +14,9 @@ def quitPyano() :
             devices[_fd].ungrab();
         except IOError:
             print "Already ungrabbed."
-    disp.close()
+    #disp.close()
     midi.close()
-    disp.pygame.quit()
+    #disp.pygame.quit()
     print "Thank you for the music!"
     print " "
     sys.exit()
@@ -31,8 +31,8 @@ midi = md.Midi()
 midi.setup()
 
 ## Display setup
-disp = display.Display()
-disp.setup(fullscreen=0)
+#disp = display.Display()
+#disp.setup(fullscreen=0)
 
 ## Memory setup
 mem = 1
@@ -72,7 +72,7 @@ print num_devices, "keyboards detected."
 if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
-    disp.close()
+    #disp.close()
     midi.close()
     sys.exit()
 
@@ -84,7 +84,7 @@ for d in devices:
     keyboards[d] = _keyboard
     _number += 1
 
-disp.fillBackground()
+#disp.fillBackground()
 ## Configure keyboards
 kbCount = 0
 for kb in keyboards.values():
@@ -96,13 +96,13 @@ for kb in keyboards.values():
     ## Display status
     info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
         (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-    disp.drawStatus(info, kbCount)
-    disp.update()
+    #disp.drawStatus(info, kbCount)
+    #disp.update()
     kbCount += 1
 ## Draw
 #disp.drawCircle()
-disp.drawLogo()
-disp.update()
+#disp.drawLogo()
+#disp.update()
 
 ## Main loop
 change = 1
@@ -274,22 +274,22 @@ while True:
                 ## Update all values
                 kb.config(midi)
 
-    disp.fillBackground()
+    #disp.fillBackground()
     # Stats
     kbCount = 0
     for kb in keyboards.values():
-        if sum(kb.pressed.values()) > 0 or kb.sust > 0:
-            disp.pulseCircle()
+        #if sum(kb.pressed.values()) > 0 or kb.sust > 0:
+            #disp.pulseCircle()
         info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-        disp.drawStatus(info, kbCount)
+        #disp.drawStatus(info, kbCount)
         kbCount += 1
     # Logo
     #disp.drawCircle()
-    disp.drawLogo()
+    #disp.drawLogo()
     # Draw memory if SHIFT is held
-    if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+    #if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
     # Quit menu
-    if showQuitMenu == True: disp.drawQuitMenu() 
+    #if showQuitMenu == True: disp.drawQuitMenu() 
 
-    disp.update()
+    #disp.update()
