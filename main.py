@@ -23,7 +23,6 @@ def quitPyano() :
     return 
 
 ## Initialize toggle variables
-caps_on = 1
 share_sust = 1
 
 ## Midi setup
@@ -76,6 +75,14 @@ if num_devices == 0:
     midi.close()
     sys.exit()
 
+# Grab keyboards
+for _fd in devices.keys():
+    try:
+        devices[_fd].grab();
+        print "Grabbed keyboard", devices[_fd].name
+    except IOError:
+        print "Already grabbed."
+
 ## Setup keyboards
 keyboards = dict()
 _number = 1
@@ -94,15 +101,11 @@ for kb in keyboards.values():
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
     ## Display status
-    info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-        (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+    #info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+    #    (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
     #disp.drawStatus(info, kbCount)
     #disp.update()
     kbCount += 1
-## Draw
-#disp.drawCircle()
-#disp.drawLogo()
-#disp.update()
 
 ## Main loop
 change = 1
@@ -124,26 +127,6 @@ while True:
                     # Modifiers
                     if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
                         change = 10
-                    elif keyname == "KEY_CAPSLOCK":
-                        caps_on = 1-caps_on
-                        if caps_on:
-                            # Ungrab keyboard
-                            for _fd in devices.keys():
-                                try:
-                                    devices[_fd].ungrab();
-                                    print "Ungrabbed keyboard", devices[_fd].name
-                                except IOError:
-                                    print "Already ungrabbed."
-                            print ""
-                        else:
-                            # Grab keyboard
-                            for _fd in devices.keys():
-                                try:
-                                    devices[_fd].grab();
-                                    print "Grabbed keyboard", devices[_fd].name
-                                except IOError:
-                                    print "Already grabbed."
-                            print ""
                     # Instrument change
                     elif keyname == "KEY_PAGEUP":
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
@@ -231,6 +214,7 @@ while True:
                     # Quit
                     elif keyname == "KEY_ESC":
                         showQuitMenu = True;
+                        print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
@@ -289,7 +273,5 @@ while True:
     #disp.drawLogo()
     # Draw memory if SHIFT is held
     #if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
-    # Quit menu
-    #if showQuitMenu == True: disp.drawQuitMenu() 
 
     #disp.update()
