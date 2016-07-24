@@ -7,11 +7,16 @@ class Midi(object):
     def setup(self):
         ## MIDI init
         pygame.midi.init()
-        print "Choose an output device:"
-        for i in range(0,pygame.midi.get_count()):
-            print "%i : %s" %(i, pygame.midi.get_device_info(i))
-        dev = int(raw_input(">> " ))
-        self.player = pygame.midi.Output(dev)
+        ## Wait for FluidSynth to be ready
+        synthReady = False
+        while (synthReady == False):
+            for i in range(0,pygame.midi.get_count()):
+                #print "Trying %i: %s" %(i, pygame.midi.get_device_info(i))
+                # get_device_info(i) returns a list of info, [1] gives the device namestring
+                if ("Synth" in pygame.midi.get_device_info(i)[1]) : 
+                    self.player = pygame.midi.Output(i)
+                    print "Using %s" %(pygame.midi.get_device_info(i)[1])
+                    synthReady = True
         print "MIDI setup OK!"
 
     def close(self):
