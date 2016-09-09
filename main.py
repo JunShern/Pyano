@@ -141,9 +141,17 @@ while True:
                         kb.baseNote = clamp(kb.baseNote+12,24,72)
                     # Transpose 
                     elif keyname == "KEY_DOWN":
-                        kb.baseNote = clamp(kb.baseNote-1,24,72)
+                        if change == 10: # Shift down
+                            for _kb in keyboards.values():
+                                _kb.baseNote = clamp(_kb.baseNote-1,24,72)
+                        else:
+                            kb.baseNote = clamp(kb.baseNote-1,24,72)
                     elif keyname == "KEY_UP":
-                        kb.baseNote = clamp(kb.baseNote+1,24,72)
+                        if change == 10: # Shift down
+                            for _kb in keyboards.values():
+                                _kb.baseNote = clamp(_kb.baseNote+1,24,72)
+                        else:
+                            kb.baseNote = clamp(kb.baseNote+1,24,72)
                     # Volume and velocity change
                     elif keyname == "KEY_HOME":
                         if change == 1:
