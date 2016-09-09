@@ -36,9 +36,7 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 
 ###Screenshots
 ----
-Latest version:  
-
-![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
+Latest version is command-line-based (in anticipation of a move to a headless Raspberry Pi version), hence has no GUI. 
 
 Older version (in branch version1), showing keyboard layout:  
 
