@@ -143,13 +143,15 @@ while True:
                     elif keyname == "KEY_DOWN":
                         if change == 10: # Shift down
                             for _kb in keyboards.values():
-                                _kb.baseNote = clamp(_kb.baseNote-1,24,72)
+                                if _kb.channel != 9: # Don't transpose if percussion
+                                    _kb.baseNote = clamp(_kb.baseNote-1,24,72)
                         else:
                             kb.baseNote = clamp(kb.baseNote-1,24,72)
                     elif keyname == "KEY_UP":
                         if change == 10: # Shift down
                             for _kb in keyboards.values():
-                                _kb.baseNote = clamp(_kb.baseNote+1,24,72)
+                                if _kb.channel != 9: # Don't transpose if percussion
+                                    _kb.baseNote = clamp(_kb.baseNote+1,24,72)
                         else:
                             kb.baseNote = clamp(kb.baseNote+1,24,72)
                     # Volume and velocity change
