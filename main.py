@@ -16,10 +16,10 @@ def quitPyano() :
             print "Already ungrabbed."
     if (not headless):
         disp.close()
-    midi.close()
-    disp.pygame.quit()
     print "Thank you for the music!"
     print " "
+    midi.close()
+    disp.pygame.quit()
     sys.exit()
     return 
 
@@ -45,7 +45,7 @@ base_mem = list()
 vol_mem = list()
 vel_mem = list()
 memory.readMemory(inst_mem, base_mem, vol_mem, vel_mem)
-print "Memory setup OK!"
+#print "Memory setup OK!"
 
 ## Key-code bindings
 getCode = dict()
@@ -66,7 +66,7 @@ for fn in list_devices():
     dev = InputDevice(fn)
     rate = dev.repeat[0] # Extract keyboard repeat rate 
     if rate > 0: ## Will be zero unless it's a keyboard! :)
-        print dev
+        #print dev
         devices.append(dev.fn)
 
 devices = map(InputDevice, devices) 
@@ -99,7 +99,7 @@ if (not headless): disp.fillBackground()
 kbCount = 0
 for kb in keyboards.values():
     kb.config(midi)
-    print "Keyboard", kb, " setup OK!"
+    #print "Keyboard", kb, " setup OK!"
     ## Pressed?
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
@@ -111,6 +111,7 @@ for kb in keyboards.values():
         disp.drawLogo()
         disp.update()
     kbCount += 1
+print ""
 
 ## Main loop
 change = 1

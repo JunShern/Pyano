@@ -3,6 +3,7 @@
 Pyano () {
 	cd /home/junshern/Scripts/Pyano/dev/
 	echo "Starting Pyano..."
+    echo ''
 	sudo python main.py
 }
 
@@ -24,11 +25,7 @@ case $1 in
 
 		;;
 	stop )
-		wmctrl -F -c Onion
-		killall sooperlooper
-		killall slgui
 		killall fluidsynth
-		killall jackd
 		echo "Thank you for the music."
 		;;
 	* )
