@@ -11,7 +11,7 @@ class Midi(object):
         synthReady = False
         while (synthReady == False):
             for i in range(0,pygame.midi.get_count()):
-                #print "Trying %i: %s" %(i, pygame.midi.get_device_info(i))
+                # print "Trying %i: %s" %(i, pygame.midi.get_device_info(i))
                 # get_device_info(i) returns a list of info, [1] gives the device namestring
                 if ("Synth" in pygame.midi.get_device_info(i)[1]) : 
                     self.player = pygame.midi.Output(i)
