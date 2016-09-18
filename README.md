@@ -1,5 +1,4 @@
 ##About
-----
 
 Pyano is a free and open-source virtual MIDI controller program which allows you to use your keyboard (as in QWERTY keyboard) as a keyboard instrument (as in pianos, harpsichords, organs).
 
@@ -8,12 +7,10 @@ Born of a need for an instrument to play while away from home, the Pyano project
 Watch the demo [here](https://www.youtube.com/watch?v=W8SxEO2BcnQ)! 
 
 ##How It Works
-----
 
 Pyano focuses on the front-end of things; which is to say, it provides a user interface that captures keystroke events from the user's keyboard. Upon detecting a keypress, the program sends a MIDI signal to an external synthesizer program (such as Fluidsynth), which produces the sounds. On its own, Pyano does **not** make any sound.
 
 ##Getting Started
-----
 
 ###Prerequisites
 
@@ -38,6 +35,9 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
    ```bash
    sudo apt-get install fluidsynth
    ```
+   
+4. Software synths like FluidSynth require SoundFonts to produce sound; these SoundFonts tell your synthesizer what sounds to make when Pyano asks the synthesizer to 'Play middle C on a trombone'. 
+   Many different SoundFonts exist, but the 'FluidR3_GM' SoundFont has been tested and sounds great. Recent versions of Ubuntu come with this SoundFont (located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`, but you can easily find and download other SoundFonts online.  
 
 ###Setup
 There are many ways to fit Pyano into your musical workflow, but it all involves connecting Pyano to a software synth. The simplest, officially supported setup is described below:
@@ -52,7 +52,7 @@ There are many ways to fit Pyano into your musical workflow, but it all involves
    ```bashbash
    ./playpyano start
    ```
-   The script assumes you have FluidSynth and ALSA installed, and your soundfont is located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`, as should be the case for Ubuntu 14.04 and up. You can change the path to point to any .sf2 soundfont you like.
+   The script assumes you have FluidSynth and ALSA installed, and your soundfont is located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`. You can change the path to point to any .sf2 soundfont you like.
 
 3. Make some music! (Look below for Instructions on how to play)
 
@@ -64,7 +64,6 @@ There are many ways to fit Pyano into your musical workflow, but it all involves
 
 
 ##Screenshots
-----
 
 Current version, shows multiple keyboards and status lines for each keyboard:
 
@@ -76,7 +75,6 @@ Older, Windows-compatible version (in branch version1):
 
 
 ##Instructions
-----
 
 * **Volume** control UP/DOWN using HOME/END buttons  
   * Note that HOME/END only controls volume for your current keyboard; if you'd like to change global volume, use your mouse to manually change the volume settings on your system tray
@@ -111,6 +109,5 @@ Older, Windows-compatible version (in branch version1):
   * Be careful though, Pyano doesn't support plugging/unplugging while running, so don't unplug your keyboards after Pyano has started up.
 
 ##Similar projects
-----
 
 * [Virtual MIDI Piano Keyboard (VMPK)](http://vmpk.sourceforge.net/)
