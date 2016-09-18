@@ -1,66 +1,69 @@
-###About
+##About
 ----
 
 Pyano is a free and open-source virtual MIDI controller program which allows you to use your keyboard (as in QWERTY keyboard) as a keyboard instrument (as in pianos, harpsichords, organs).
 
 Born of a need for an instrument to play while away from home, the Pyano project hopes to allow musicians to express themselves with nothing more than a computer or laptop, and optionally many external USB keyboards. 
 
-###How It Works
+Watch the demo [here](https://www.youtube.com/watch?v=W8SxEO2BcnQ)! 
+
+##How It Works
 ----
 
 Pyano focuses on the front-end of things; which is to say, it provides a user interface that captures keystroke events from the user's keyboard. Upon detecting a keypress, the program sends a MIDI signal to an external synthesizer program (such as Fluidsynth), which produces the sounds. On its own, Pyano does **not** make any sound.
 
-###Getting Started
+##Getting Started
 ----
 
-####Prerequisites
+###Prerequisites
 
 1. The latest version of Pyano can only be run on Linux, and has been tested on Ubuntu 14.04 and 16.04, though other flavours of Linux should work. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano) using:
-```
-git clone https://github.com/JunShern/Pyano
-```
+   ```
+   git clone https://github.com/JunShern/Pyano
+   ```
    Alternatively, there is an older version on branch `version1` which has fewer features and only supports one instrument at a time, that should work on other operating systems (tested on Windows 8 and Windows 10, but there will likely be latency issues depending on your setup).
 
 2. Pyano is built on [Python 2.7](https://www.python.org/) (already included on most Linux OSes - just run `python` in a terminal to make sure that the version is 2.7.*), the [Pygame library](http://www.pygame.org/hifi.html) and the [Python EvDev](https://python-evdev.readthedocs.org/en/latest/) library, so you need to have these installed on your computer:
-```
-# Install Pygame
-sudo apt-get install python-pygame
-# Install EvDev using pip
-sudo apt-get install python-dev python-pip gcc
-sudo apt-get install linux-headers-$(uname -r)
-sudo pip install evdev
-```
+   ```bash
+   # Install Pygame
+   sudo apt-get install python-pygame
+   
+   # Install EvDev using pip
+   sudo apt-get install python-dev python-pip gcc
+   sudo apt-get install linux-headers-$(uname -r)
+   sudo pip install evdev
+   ```
 
 3. You also need to install a real-time software synthesizer which supports MIDI input. ([Fluidsynth](http://www.fluidsynth.org/) has been tested and is recommended)
-```
-sudo apt-get install fluidsynth
-```
+   ```bash
+   sudo apt-get install fluidsynth
+   ```
 
-####Setup
+###Setup
 There are many ways to fit Pyano into your musical workflow, but it all involves connecting Pyano to a software synth. The simplest, officially supported setup is described below:
 
-#####Using FluidSynth with ALSA
+####Using FluidSynth with ALSA
 1. Open up a terminal, and navigate to where you cloned the Pyano repository. For example,
-```
-cd /home/junshern/Pyano
-```
+   ```bash
+   cd /home/junshern/Pyano
+   ```
 
 2. Use the script 'playpyano.sh' to automatically run FluidSynth and Pyano for you. 
-```
-./playpyano start
-```
+   ```bashbash
+   ./playpyano start
+   ```
    The script assumes you have FluidSynth and ALSA installed, and your soundfont is located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`, as should be the case for Ubuntu 14.04 and up. You can change the path to point to any .sf2 soundfont you like.
 
 3. Make some music! (Look below for Instructions on how to play)
 
 4. After you're done, run 
-```
-./playpyano stop
-``` 
+   ```bash
+   ./playpyano stop
+   ``` 
    to close FluidSynth. This is less useful for this simple setup of using FluidSynth with ALSA, but if you have a complicated setup such as using JACK to route your audio into various places, you can tailor the script to your needs (see the 'makemusic' script for a more complicated workflow using JACK and SooperLooper for live looping). 
 
 
-###Screenshots
+##Screenshots
 ----
 
 Current version, shows multiple keyboards and status lines for each keyboard:
@@ -72,7 +75,7 @@ Older, Windows-compatible version (in branch version1):
 ![version1](https://raw.githubusercontent.com/JunShern/Pyano/master/img/version1.png?raw=true "version1")
 
 
-###Instructions
+##Instructions
 ----
 
 * **Volume** control UP/DOWN using HOME/END buttons  
@@ -107,7 +110,7 @@ Older, Windows-compatible version (in branch version1):
   * Plug in an extra USB keyboard before you run Pyano; you'll be able to control each keyboard individually as a different instrument. Handy for getting more octaves in range! 
   * Be careful though, Pyano doesn't support plugging/unplugging while running, so don't unplug your keyboards after Pyano has started up.
 
-###Similar projects
+##Similar projects
 ----
 
 * [Virtual MIDI Piano Keyboard (VMPK)](http://vmpk.sourceforge.net/)
