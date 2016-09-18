@@ -3,7 +3,7 @@
 Pyano () {
 	cd /home/junshern/Scripts/Pyano/dev/
 	echo "Starting Pyano..."
-	sudo python main.py 
+	sudo python main.py
 }
 
 # Script to launch audio servers for music-making

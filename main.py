@@ -30,8 +30,12 @@ midi = md.Midi()
 midi.setup()
 
 ## Display setup
-#disp = display.Display()
-#disp.setup(fullscreen=0)
+headless = False
+if (len(sys.argv) > 1) and (str(sys.argv[1]) == 'headless'):
+    headless = True
+else:
+    disp = display.Display()
+    disp.setup(fullscreen=0)
 
 ## Memory setup
 mem = 1
@@ -71,7 +75,7 @@ print num_devices, "keyboards detected."
 if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
-    #disp.close()
+    if (not headless): disp.close()
     midi.close()
     sys.exit()
 
@@ -91,7 +95,7 @@ for d in devices:
     keyboards[d] = _keyboard
     _number += 1
 
-#disp.fillBackground()
+if (not headless): disp.fillBackground()
 ## Configure keyboards
 kbCount = 0
 for kb in keyboards.values():
@@ -101,10 +105,11 @@ for kb in keyboards.values():
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
     ## Display status
-    #info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-    #    (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-    #disp.drawStatus(info, kbCount)
-    #disp.update()
+    if (not headless):
+        info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+            (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+        disp.drawStatus(info, kbCount)
+        disp.update()
     kbCount += 1
 
 ## Main loop
@@ -224,7 +229,7 @@ while True:
                     # Quit
                     elif keyname == "KEY_ESC":
                         showQuitMenu = True;
-                        print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
+                        if (headless): print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
@@ -268,20 +273,23 @@ while True:
                 ## Update all values
                 kb.config(midi)
 
-    #disp.fillBackground()
+    if (not headless): disp.fillBackground()
     # Stats
     kbCount = 0
-    for kb in keyboards.values():
-        #if sum(kb.pressed.values()) > 0 or kb.sust > 0:
-            #disp.pulseCircle()
-        info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-            (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-        #disp.drawStatus(info, kbCount)
-        kbCount += 1
-    # Logo
-    #disp.drawCircle()
-    #disp.drawLogo()
-    # Draw memory if SHIFT is held
-    #if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+    if (not headless):
+        for kb in keyboards.values():
+            if sum(kb.pressed.values()) > 0 or kb.sust > 0:
+                disp.pulseCircle()
+            info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+                (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+            disp.drawStatus(info, kbCount)
+            kbCount += 1
+        # Logo
+        disp.drawCircle()
+        disp.drawLogo()
+        # Draw memory if SHIFT is held
+        if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+        # Display Quit menu
+        if showQuitMenu: disp.drawQuitMenu()
 
-    #disp.update()
+        disp.update()
