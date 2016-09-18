@@ -15,24 +15,50 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 
 ####Prerequisites
 
-1. The latest version of Pyano (the one that supports multiple-keyboards as multiple instruments) can only be run on Linux, and has only been tested on Ubuntu 14.04, though other flavours of Linux should work.  
-   Alternatively, there is an older version on a separate branch, version1, which should work on other operating systems out of the box (tested on Windows 8 and Windows 10).
+1. The latest version of Pyano can only be run on Linux, and has been tested on Ubuntu 14.04 and 16.04, though other flavours of Linux should work. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano) using:
+```
+git clone https://github.com/JunShern/Pyano
+```
+   Alternatively, there is an older version on branch `version1` which has fewer features and only supports one instrument at a time, that should work on other operating systems (tested on Windows 8 and Windows 10, but there will likely be latency issues depending on your setup).
 
-2. Pyano is built on [Python 2.7](https://www.python.org/), the [Pygame library](http://www.pygame.org/hifi.html) and the [Python EvDev](https://python-evdev.readthedocs.org/en/latest/) library, so you need to have these installed on your computer.
+2. Pyano is built on [Python 2.7](https://www.python.org/) (already included on most Linux OSes - just run `python` in a terminal to make sure that the version is 2.7.*), the [Pygame library](http://www.pygame.org/hifi.html) and the [Python EvDev](https://python-evdev.readthedocs.org/en/latest/) library, so you need to have these installed on your computer:
+```
+# Install Pygame
+sudo apt-get install python-pygame
+# Install EvDev using pip
+sudo apt-get install python-dev python-pip gcc
+sudo apt-get install linux-headers-$(uname -r)
+sudo pip install evdev
+```
 
 3. You also need to install a real-time software synthesizer which supports MIDI input. ([Fluidsynth](http://www.fluidsynth.org/) has been tested and is recommended)
+```
+sudo apt-get install fluidsynth
+```
 
 ####Setup
+There are many ways to fit Pyano into your musical workflow, but it all involves connecting Pyano to a software synth. The simplest, officially supported setup is described below:
 
-1. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano).
+#####Using FluidSynth with ALSA
+1. Open up a terminal, and navigate to where you cloned the Pyano repository. For example,
+```
+cd /home/junshern/Pyano
+```
 
-2. Run the software synthesizer, make sure it is working and ready to accept MIDI input. Don't forget to pick a SoundFont file on your synthesizer! (FluidR3\_GM.sf2 has been tested and is great)
+2. Use the script 'playpyano.sh' to automatically run FluidSynth and Pyano for you. 
+```
+./playpyano start
+```
+   The script assumes you have FluidSynth and ALSA installed, and your soundfont is located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`, as should be the case for Ubuntu 14.04 and up. You can change the path to point to any .sf2 soundfont you like.
 
-3. Execute main.py in administrator mode (this is necessary for the software to be able to recognize different keyboard devices).
+3. Make some music! (Look below for Instructions on how to play)
 
-4. You should see a list of available output devices, choose the one which corresponds to your software synthesizer. 
+4. After you're done, run 
+```
+./playpyano stop
+``` 
+   to close FluidSynth. This is less useful for this simple setup of using FluidSynth with ALSA, but if you have a complicated setup such as using JACK to route your audio into various places, you can tailor the script to your needs (see the 'makemusic' script for a more complicated workflow using JACK and SooperLooper for live looping). 
 
-5. Make some music! 
 
 ###Screenshots
 ----
@@ -41,7 +67,7 @@ Current version, shows multiple keyboards and status lines for each keyboard:
 
 ![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
 
-Older, Windows-compatible version (in branch version1), showing keyboard layout:  
+Older, Windows-compatible version (in branch version1):  
 
 ![version1](https://raw.githubusercontent.com/JunShern/Pyano/master/img/version1.png?raw=true "version1")
 
