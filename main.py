@@ -76,9 +76,7 @@ print num_devices, "keyboards detected."
 if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
-    if (not headless): disp.close()
-    midi.close()
-    sys.exit()
+    quitPyano()
 
 # Grab keyboards
 for _fd in devices.keys():
@@ -110,6 +108,7 @@ for kb in keyboards.values():
         info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
         disp.drawStatus(info, kbCount)
+        disp.drawLogo()
         disp.update()
     kbCount += 1
 
@@ -286,7 +285,7 @@ while True:
             disp.drawStatus(info, kbCount)
             kbCount += 1
         # Logo
-        disp.drawCircle()
+        #disp.drawCircle()
         disp.drawLogo()
         # Draw memory if SHIFT is held
         if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
