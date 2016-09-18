@@ -16,7 +16,7 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 
 1. The latest version of Pyano can only be run on Linux, and has been tested on Ubuntu 14.04 and 16.04, though other flavours of Linux should work. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano) using:
    ```
-   git clone https://github.com/JunShern/Pyano
+   git clone https://github.com/JunShern/Pyano.git
    ```
    Alternatively, there is an older version on branch `version1` which has fewer features and only supports one instrument at a time, that should work on other operating systems (tested on Windows 8 and Windows 10, but there will likely be latency issues depending on your setup).
 
