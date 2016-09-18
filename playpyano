@@ -9,11 +9,6 @@ Pyano () {
 # Script to launch audio servers for music-making
 case $1 in
 	start )
-		echo "Please select an audio device: (enter card number)"
-		aplay -l | grep card
-		read -p "> " hw
-		echo "You selected HW:$hw"
-
 		# Start fluidsynth
 		echo
 		echo "Starting Fluidsynth..."

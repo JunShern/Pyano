@@ -14,16 +14,15 @@ def quitPyano() :
             devices[_fd].ungrab();
         except IOError:
             print "Already ungrabbed."
-    disp.close()
+    #disp.close()
     midi.close()
-    disp.pygame.quit()
+    #disp.pygame.quit()
     print "Thank you for the music!"
     print " "
     sys.exit()
     return 
 
 ## Initialize toggle variables
-caps_on = 1
 share_sust = 1
 
 ## Midi setup
@@ -31,8 +30,8 @@ midi = md.Midi()
 midi.setup()
 
 ## Display setup
-disp = display.Display()
-disp.setup(fullscreen=0)
+#disp = display.Display()
+#disp.setup(fullscreen=0)
 
 ## Memory setup
 mem = 1
@@ -72,9 +71,17 @@ print num_devices, "keyboards detected."
 if num_devices == 0:
     print "Please ensure that you are root, and that you have keyboards connected."
     print " "
-    disp.close()
+    #disp.close()
     midi.close()
     sys.exit()
+
+# Grab keyboards
+for _fd in devices.keys():
+    try:
+        devices[_fd].grab();
+        print "Grabbed keyboard", devices[_fd].name
+    except IOError:
+        print "Already grabbed."
 
 ## Setup keyboards
 keyboards = dict()
@@ -84,7 +91,7 @@ for d in devices:
     keyboards[d] = _keyboard
     _number += 1
 
-disp.fillBackground()
+#disp.fillBackground()
 ## Configure keyboards
 kbCount = 0
 for kb in keyboards.values():
@@ -94,15 +101,11 @@ for kb in keyboards.values():
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
     ## Display status
-    info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
-        (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-    disp.drawStatus(info, kbCount)
-    disp.update()
+    #info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
+    #    (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
+    #disp.drawStatus(info, kbCount)
+    #disp.update()
     kbCount += 1
-## Draw
-#disp.drawCircle()
-disp.drawLogo()
-disp.update()
 
 ## Main loop
 change = 1
@@ -124,26 +127,6 @@ while True:
                     # Modifiers
                     if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
                         change = 10
-                    elif keyname == "KEY_CAPSLOCK":
-                        caps_on = 1-caps_on
-                        if caps_on:
-                            # Ungrab keyboard
-                            for _fd in devices.keys():
-                                try:
-                                    devices[_fd].ungrab();
-                                    print "Ungrabbed keyboard", devices[_fd].name
-                                except IOError:
-                                    print "Already ungrabbed."
-                            print ""
-                        else:
-                            # Grab keyboard
-                            for _fd in devices.keys():
-                                try:
-                                    devices[_fd].grab();
-                                    print "Grabbed keyboard", devices[_fd].name
-                                except IOError:
-                                    print "Already grabbed."
-                            print ""
                     # Instrument change
                     elif keyname == "KEY_PAGEUP":
                         kb.inst_num = clamp(kb.inst_num+change,0,127)
@@ -158,9 +141,19 @@ while True:
                         kb.baseNote = clamp(kb.baseNote+12,24,72)
                     # Transpose 
                     elif keyname == "KEY_DOWN":
-                        kb.baseNote = clamp(kb.baseNote-1,24,72)
+                        if change == 10: # Shift down
+                            for _kb in keyboards.values():
+                                if _kb.channel != 9: # Don't transpose if percussion
+                                    _kb.baseNote = clamp(_kb.baseNote-1,24,72)
+                        else:
+                            kb.baseNote = clamp(kb.baseNote-1,24,72)
                     elif keyname == "KEY_UP":
-                        kb.baseNote = clamp(kb.baseNote+1,24,72)
+                        if change == 10: # Shift down
+                            for _kb in keyboards.values():
+                                if _kb.channel != 9: # Don't transpose if percussion
+                                    _kb.baseNote = clamp(_kb.baseNote+1,24,72)
+                        else:
+                            kb.baseNote = clamp(kb.baseNote+1,24,72)
                     # Volume and velocity change
                     elif keyname == "KEY_HOME":
                         if change == 1:
@@ -231,6 +224,7 @@ while True:
                     # Quit
                     elif keyname == "KEY_ESC":
                         showQuitMenu = True;
+                        print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
@@ -274,22 +268,20 @@ while True:
                 ## Update all values
                 kb.config(midi)
 
-    disp.fillBackground()
+    #disp.fillBackground()
     # Stats
     kbCount = 0
     for kb in keyboards.values():
-        if sum(kb.pressed.values()) > 0 or kb.sust > 0:
-            disp.pulseCircle()
+        #if sum(kb.pressed.values()) > 0 or kb.sust > 0:
+            #disp.pulseCircle()
         info = "KB %02d | INST %03d | BASE %3s | VOL %03d | VEL %03d" %\
             (kb.number, kb.inst_num, strNote(kb.baseNote), kb.volume, kb.velocity)
-        disp.drawStatus(info, kbCount)
+        #disp.drawStatus(info, kbCount)
         kbCount += 1
     # Logo
     #disp.drawCircle()
-    disp.drawLogo()
+    #disp.drawLogo()
     # Draw memory if SHIFT is held
-    if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
-    # Quit menu
-    if showQuitMenu == True: disp.drawQuitMenu() 
+    #if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
 
-    disp.update()
+    #disp.update()
