@@ -14,9 +14,10 @@ def quitPyano() :
             devices[_fd].ungrab();
         except IOError:
             print "Already ungrabbed."
-    #disp.close()
+    if (not headless):
+        disp.close()
     midi.close()
-    #disp.pygame.quit()
+    disp.pygame.quit()
     print "Thank you for the music!"
     print " "
     sys.exit()
