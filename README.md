@@ -56,7 +56,8 @@ Branch off of `mac-port` and PR changes against it.
    brew install fluid-synth
    ```
 5. Software synths like FluidSynth require SoundFonts to produce sound; these SoundFonts tell your synthesizer what sounds to make when Pyano asks the synthesizer to 'Play middle C on a trombone'. Many different SoundFonts exist, but the 'FluidR3_GM' SoundFont has been tested and sounds great. 
-MacOS machines do *not* come with 'FluidR3_GM' but the .sf2 file itself is readily available online. Place the downloaded file into the `soundfonts` folder.
+
+MacOS machines do **not** come with 'FluidR3_GM' but the .sf2 file itself is readily available online. Place the downloaded file into the `soundfonts` folder.
 
 ###Setup
 There are many ways to fit Pyano into your musical workflow, but it all involves connecting Pyano to a software synth. The simplest, officially supported setup is described below:
