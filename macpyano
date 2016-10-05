@@ -1,0 +1,34 @@
+#!/bin/bash
+
+Pyano () {
+	echo "Starting Pyano..."
+    echo ''
+	sudo python main.py
+}
+
+# Script to launch audio servers for music-making
+case $1 in
+	start )
+		# Start fluidsynth
+		echo
+		echo "Starting Fluidsynth..."
+		fluidsynth --server --no-shell --audio-driver=alsa \
+			--reverb=0 --gain=0.8 \
+			./soundfonts/FluidR3_GM.sf2 \
+			&>/tmp/fluidsynth.out &
+		sleep 1
+
+		# Launch Pyano in new terminal
+		echo
+		Pyano
+
+		;;
+	stop )
+		killall fluidsynth
+		echo "Thank you for the music."
+		;;
+	* )
+		echo "Please specify start or stop..."
+		;;
+esac
+
