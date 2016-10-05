@@ -53,7 +53,7 @@ Branch off of `mac-port` and PR changes against it.
 
 4. You also need to install a real-time software synthesizer which supports MIDI input. ([Fluidsynth](http://www.fluidsynth.org/) has been tested and is recommended)
    ```bash
-   brew install fluidsynth
+   brew install fluid-synth
    ```
 5. Software synths like FluidSynth require SoundFonts to produce sound; these SoundFonts tell your synthesizer what sounds to make when Pyano asks the synthesizer to 'Play middle C on a trombone'. Many different SoundFonts exist, but the 'FluidR3_GM' SoundFont has been tested and sounds great. MacOS machines do not come with 'FluidR3_GM' but the .sf2 file itself is readily available online. Place the downloaded file into the `soundfonts` folder.
 
