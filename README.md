@@ -65,13 +65,14 @@ There are many ways to fit Pyano into your musical workflow, but it all involves
 
 ##Screenshots
 
-Current version, shows multiple keyboards and status lines for each keyboard:
-
-![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
-
 Older, Windows-compatible version (in branch version1):  
 
 ![version1](https://raw.githubusercontent.com/JunShern/Pyano/master/img/version1.png?raw=true "version1")
+
+
+Current version, shows multiple keyboards and status lines for each keyboard:
+
+![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
 
 
 ##Instructions
