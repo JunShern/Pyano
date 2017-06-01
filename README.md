@@ -1,4 +1,4 @@
-##About
+## About
 
 Pyano is a free and open-source virtual MIDI controller program which allows you to use your keyboard (as in QWERTY keyboard) as a keyboard instrument (as in pianos, harpsichords, organs).
 
@@ -6,13 +6,13 @@ Born of a need for an instrument to play while away from home, the Pyano project
 
 Watch the demo [here](https://www.youtube.com/watch?v=W8SxEO2BcnQ)! 
 
-##How It Works
+## How It Works
 
 Pyano focuses on the front-end of things; which is to say, it provides a user interface that captures keystroke events from the user's keyboard. Upon detecting a keypress, the program sends a MIDI signal to an external synthesizer program (such as Fluidsynth), which produces the sounds. On its own, Pyano does **not** make any sound.
 
-##Getting Started
+## Getting Started
 
-###Prerequisites
+### Prerequisites
 
 1. The latest version of Pyano can only be run on Linux, and has been tested on Ubuntu 14.04 and 16.04, though other flavours of Linux should work. Clone the latest build of Pyano from the Github [page](https://github.com/JunShern/Pyano) using:
    ```
@@ -39,10 +39,10 @@ Pyano focuses on the front-end of things; which is to say, it provides a user in
 4. Software synths like FluidSynth require SoundFonts to produce sound; these SoundFonts tell your synthesizer what sounds to make when Pyano asks the synthesizer to 'Play middle C on a trombone'. 
    Many different SoundFonts exist, but the 'FluidR3_GM' SoundFont has been tested and sounds great. Recent versions of Ubuntu come with this SoundFont (located at `/usr/share/sounds/sf2/FluidR3_GM.sf2`, but you can easily find and download other SoundFonts online.  
 
-###Setup
+### Setup
 There are many ways to fit Pyano into your musical workflow, but it all involves connecting Pyano to a software synth. The simplest, officially supported setup is described below:
 
-####Using FluidSynth with ALSA
+#### Using FluidSynth with ALSA
 1. Open up a terminal, and navigate to where you cloned the Pyano repository. For example,
    ```bash
    cd /home/junshern/Pyano
@@ -63,7 +63,7 @@ There are many ways to fit Pyano into your musical workflow, but it all involves
    to close FluidSynth. This is less useful for this simple setup of using FluidSynth with ALSA, but if you have a complicated setup such as using JACK to route your audio into various places, you can tailor the script to your needs (see the 'makemusic' script for a more complicated workflow using JACK and SooperLooper for live looping). 
 
 
-##Screenshots
+## Screenshots
 
 Older, Windows-compatible version (in branch version1):  
 
@@ -75,7 +75,7 @@ Current version, shows multiple keyboards and status lines for each keyboard:
 ![multikey](https://raw.githubusercontent.com/JunShern/Pyano/master/img/multikey.png?raw=true "multikey")
 
 
-##Instructions
+## Instructions
 
 * **Volume** control UP/DOWN using HOME/END buttons  
   * Note that HOME/END only controls volume for your current keyboard; if you'd like to change global volume, use your mouse to manually change the volume settings on your system tray
@@ -109,6 +109,6 @@ Current version, shows multiple keyboards and status lines for each keyboard:
   * Plug in an extra USB keyboard before you run Pyano; you'll be able to control each keyboard individually as a different instrument. Handy for getting more octaves in range! 
   * Be careful though, Pyano doesn't support plugging/unplugging while running, so don't unplug your keyboards after Pyano has started up.
 
-##Similar projects
+## Similar projects
 
 * [Virtual MIDI Piano Keyboard (VMPK)](http://vmpk.sourceforge.net/)
