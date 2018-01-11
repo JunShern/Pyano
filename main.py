@@ -158,11 +158,13 @@ while True:
                     elif keyname == "KEY_HOME":
                         if change == 1:
                             kb.volume = clamp(kb.volume+10,0,127)
+                            midi.setVolume(kb.volume, kb.channel)
                         else:
                             kb.velocity = clamp(kb.velocity+10,0,127)
                     elif keyname == "KEY_END":
                         if change == 1:
                             kb.volume = clamp(kb.volume-10,0,127)
+                            midi.setVolume(kb.volume, kb.channel)
                         else:
                             kb.velocity = clamp(kb.velocity-10,0,127)
                     # Memory events
@@ -191,12 +193,14 @@ while True:
                             kb.volume = vol_mem[mem-1]
                             kb.velocity = vel_mem[mem-1]
                             kb.channel = kb.number-1 # Make sure to return from percussion mode
+                        kb.config(midi)
                     elif keyname == "KEY_F10" or keyname == "KEY_KP0":
                         # Load channel for percussion
                         kb.channel = 9 # Channel 10 (0-indexed) is the special channel for percussion
                         kb.baseNote = 26 # First drum sample for Fluid_GM3 soundfont begins at 26
                         kb.volume = 90
                         kb.velocity = 80
+                        kb.config(midi)
                     # Sustain
                     elif keyname == "KEY_SPACE":
                         if change == 10: # Shift is pressed, toggle sustain-sharing
@@ -263,10 +267,6 @@ while True:
                         #note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
                         if keyname in kb.noteOf.keys(): #kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
                             kb.key_up(midi, keyname, kb.noteOf[keyname])
-
-
-                ## Update all values
-                kb.config(midi)
 
     if (not headless): disp.fillBackground()
     # Stats

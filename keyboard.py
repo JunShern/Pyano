@@ -13,7 +13,8 @@ class Keyboard(object):
         self.noteOf = dict() # Which note?
 
     def config(self, midi):
-        midi.setInstrument(self.inst_num, self.channel) # Instrument
+        midi.setInstrument(self.inst_num, self.channel)
+        midi.setVolume(self.volume, self.channel)
 
     def key_up(self, midi, keyname, note):
         if self.pressed[keyname] > 0: # Only turn it OFF if it's ON

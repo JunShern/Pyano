@@ -2,7 +2,7 @@
 
 Pyano () {
 	echo "Starting Pyano..."
-	sudo python main.py 
+	sudo python main.py 'headless'
 }
 
 # Script to launch audio servers for music-making
@@ -37,7 +37,8 @@ case $1 in
 		fi
 
         # Check for Arduino Leonardo Looper - if not present, no need SooperLooper
-        if aconnect -i | grep --quiet 'Arduino Leonardo'; then
+        #if aconnect -i | grep --quiet 'Arduino Leonardo'; then
+        #if 1; then
             echo Looper found 
             # Start SooperLooper
             SL_NAME="sooperlooper"
@@ -45,8 +46,8 @@ case $1 in
             echo
             sudo killall -q -9 -w $SL_NAME # Only one SooperLooper
             echo "Starting SooperLooper..."
-            sooperlooper --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
-            #slgui --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
+            #sooperlooper --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
+            slgui --load-session='sooperSesh.slsess' --load-midi-binding='loopMidiControls.slb' &
             while ! nc -4 -u -z -v localhost $OSC_PORT; do sleep 1; done # Wait for SL to be ready
             # Connect to JACK
             jack_connect system:capture_1 $SL_NAME:common_in_1
@@ -59,15 +60,15 @@ case $1 in
             jack_disconnect fluidsynth:l_00 system:playback_1
             jack_disconnect fluidsynth:r_00 system:playback_2
             # MIDI connections with ALSA
-            aconnect 'Arduino Leonardo':0 'sooperlooper':0
-        else 
-            echo No looper found, running Vanilla Pyano
-        fi
+            #aconnect 'Arduino Leonardo':0 'sooperlooper':0
+        #else 
+        #    echo No looper found, running Vanilla Pyano
+        #fi
 
 		# Launch Onion Looper handler script
 		#echo
-		#echo "Starting handler script for Onion Looper..."
-		#gnome-terminal -e 'python /home/junshern/Scripts/OnionLooper/serial_to_osc.py'
+		echo "Starting handler script for Onion Looper..."
+		gnome-terminal -e 'python /home/junshern/Scripts/OnionLooper/serial_to_osc.py'
 		
 		# Launch Pyano in new terminal
 		echo
