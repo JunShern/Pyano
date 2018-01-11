@@ -11,15 +11,15 @@ from select import select
 def quitPyano() :
     for _fd in devices.keys():
         try:
-            devices[_fd].ungrab();
+            devices[_fd].ungrab()
         except IOError:
             print "Already ungrabbed."
-    if (not headless):
+    if not headless:
         disp.close()
     print "Thank you for the music!"
     print " "
     sys.exit()
-    return 
+    return
 
 ## Initialize toggle variables
 share_sust = 1
@@ -125,53 +125,53 @@ while True:
                         if keyname == "KEY_ENTER": quitPyano()
                         else: showQuitMenu = False
                     # Modifiers
-                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
+                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT":
                         change = 10
                     # Instrument change
                     elif keyname == "KEY_PAGEUP":
-                        kb.inst_num = clamp(kb.inst_num+change,0,127)
+                        kb.inst_num = clamp(kb.inst_num+change, 0, 127)
                         midi.setInstrument(kb.inst_num, kb.channel)
                     elif keyname == "KEY_PAGEDOWN":
-                        kb.inst_num = clamp(kb.inst_num-change,0,127)
+                        kb.inst_num = clamp(kb.inst_num-change, 0, 127)
                         midi.setInstrument(kb.inst_num, kb.channel)
                     # Octave change
                     elif keyname == "KEY_LEFT":
-                        kb.baseNote = clamp(kb.baseNote-12,24,72)
+                        kb.baseNote = clamp(kb.baseNote-12, 24, 72)
                     elif keyname == "KEY_RIGHT":
-                        kb.baseNote = clamp(kb.baseNote+12,24,72)
-                    # Transpose 
+                        kb.baseNote = clamp(kb.baseNote+12, 24, 72)
+                    # Transpose
                     elif keyname == "KEY_DOWN":
                         if change == 10: # Shift down
                             for _kb in keyboards.values():
                                 if _kb.channel != 9: # Don't transpose if percussion
-                                    _kb.baseNote = clamp(_kb.baseNote-1,24,72)
+                                    _kb.baseNote = clamp(_kb.baseNote-1, 24, 72)
                         else:
-                            kb.baseNote = clamp(kb.baseNote-1,24,72)
+                            kb.baseNote = clamp(kb.baseNote-1, 24, 72)
                     elif keyname == "KEY_UP":
                         if change == 10: # Shift down
                             for _kb in keyboards.values():
                                 if _kb.channel != 9: # Don't transpose if percussion
-                                    _kb.baseNote = clamp(_kb.baseNote+1,24,72)
+                                    _kb.baseNote = clamp(_kb.baseNote+1, 24, 72)
                         else:
-                            kb.baseNote = clamp(kb.baseNote+1,24,72)
+                            kb.baseNote = clamp(kb.baseNote+1, 24, 72)
                     # Volume and velocity change
                     elif keyname == "KEY_HOME":
                         if change == 1:
-                            kb.volume = clamp(kb.volume+10,0,127)
+                            kb.volume = clamp(kb.volume+10, 0, 127)
                             midi.setVolume(kb.volume, kb.channel)
                         else:
-                            kb.velocity = clamp(kb.velocity+10,0,127)
+                            kb.velocity = clamp(kb.velocity+10, 0, 127)
                     elif keyname == "KEY_END":
                         if change == 1:
-                            kb.volume = clamp(kb.volume-10,0,127)
+                            kb.volume = clamp(kb.volume-10, 0, 127)
                             midi.setVolume(kb.volume, kb.channel)
                         else:
-                            kb.velocity = clamp(kb.velocity-10,0,127)
+                            kb.velocity = clamp(kb.velocity-10, 0, 127)
                     # Memory events
-                    elif keyname in ["KEY_F1","KEY_F2","KEY_F3","KEY_F4","KEY_F5",\
-                                    "KEY_F6","KEY_F7","KEY_F8","KEY_F9",\
-                                    "KEY_KP1","KEY_KP2","KEY_KP3","KEY_KP4","KEY_KP5",\
-                                    "KEY_KP6","KEY_KP7","KEY_KP8","KEY_KP9"]:
+                    elif keyname in ["KEY_F1", "KEY_F2", "KEY_F3", "KEY_F4", "KEY_F5",\
+                                    "KEY_F6", "KEY_F7", "KEY_F8", "KEY_F9",\
+                                    "KEY_KP1", "KEY_KP2", "KEY_KP3", "KEY_KP4", "KEY_KP5",\
+                                    "KEY_KP6", "KEY_KP7", "KEY_KP8", "KEY_KP9"]:
                         mem = int(keyname[-1])
                         if change == 10: # Shift down
                             # Save
@@ -196,7 +196,7 @@ while True:
                         kb.config(midi)
                     elif keyname == "KEY_F10" or keyname == "KEY_KP0":
                         # Load channel for percussion
-                        kb.channel = 9 # Channel 10 (0-indexed) is the special channel for percussion
+                        kb.channel = 9 # Channel 10 (0-indexed) is the channel for percussion
                         kb.baseNote = 26 # First drum sample for Fluid_GM3 soundfont begins at 26
                         kb.volume = 90
                         kb.velocity = 80
@@ -239,7 +239,7 @@ while True:
                 ## KEY UP
                 elif event.value == 0:
                     # Shift up
-                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT": 
+                    if keyname == "KEY_LEFTSHIFT" or keyname == "KEY_RIGHTSHIFT":
                         change = 1
                     # Sustain
                     elif keyname == "KEY_SPACE":
@@ -265,13 +265,14 @@ while True:
                     # Play note
                     else:
                         #note = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
-                        if keyname in kb.noteOf.keys(): #kb.noteOf[keyname] >= kb.baseNote: # Check flag; ignore if not one of the notes
+                        if keyname in kb.noteOf.keys():
                             kb.key_up(midi, keyname, kb.noteOf[keyname])
 
-    if (not headless): disp.fillBackground()
+    if not headless: 
+        disp.fillBackground()
     # Stats
     kbCount = 0
-    if (not headless):
+    if not headless:
         for kb in keyboards.values():
             if sum(kb.pressed.values()) > 0 or kb.sust > 0:
                 disp.pulseCircle()
@@ -283,8 +284,9 @@ while True:
         #disp.drawCircle()
         disp.drawLogo()
         # Draw memory if SHIFT is held
-        if change == 10: disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
+        if change == 10:
+            disp.drawMemory(inst_mem, base_mem, vol_mem, vel_mem)
         # Display Quit menu
-        if showQuitMenu: disp.drawQuitMenu()
-
+        if showQuitMenu:
+            disp.drawQuitMenu()
         disp.update()
