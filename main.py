@@ -18,8 +18,6 @@ def quitPyano() :
         disp.close()
     print "Thank you for the music!"
     print " "
-    midi.close()
-    disp.pygame.quit()
     sys.exit()
     return 
 
@@ -28,7 +26,6 @@ share_sust = 1
 
 ## Midi setup
 midi = md.Midi()
-midi.setup()
 
 ## Display setup
 headless = False
@@ -45,7 +42,6 @@ base_mem = list()
 vol_mem = list()
 vel_mem = list()
 memory.readMemory(inst_mem, base_mem, vol_mem, vel_mem)
-#print "Memory setup OK!"
 
 ## Key-code bindings
 getCode = dict()
@@ -66,7 +62,6 @@ for fn in list_devices():
     dev = InputDevice(fn)
     rate = dev.repeat[0] # Extract keyboard repeat rate 
     if rate > 0: ## Will be zero unless it's a keyboard! :)
-        #print dev
         devices.append(dev.fn)
 
 devices = map(InputDevice, devices) 
@@ -81,7 +76,7 @@ if num_devices == 0:
 # Grab keyboards
 for _fd in devices.keys():
     try:
-        devices[_fd].grab();
+        devices[_fd].grab()
         print "Grabbed keyboard", devices[_fd].name
     except IOError:
         print "Already grabbed."
@@ -99,7 +94,6 @@ if (not headless): disp.fillBackground()
 kbCount = 0
 for kb in keyboards.values():
     kb.config(midi)
-    #print "Keyboard", kb, " setup OK!"
     ## Pressed?
     for keyname in getCode.keys():
         kb.pressed[keyname] = 0
@@ -229,8 +223,8 @@ while True:
                                     kb.pressed[_keyname] += 1
                     # Quit
                     elif keyname == "KEY_ESC":
-                        showQuitMenu = True;
-                        if (headless): print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
+                        showQuitMenu = True
+                        print "ESC pressed, are you sure you want to quit? (Hit ENTER to quit)"
                     # Play note
                     else:
                         kb.noteOf[keyname] = kb.baseNote + getNote.get(keyname, -100)-1 # default -100 as a flag
